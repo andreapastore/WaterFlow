@@ -5,9 +5,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +25,7 @@ public class RestSocio {
 	SocioService socioService;
 	
 	@PostMapping(value = "/insert", produces = "application/json")
-	public ResponseEntity insertSocio(@RequestBody Socio socio)
+	public ResponseEntity insertSocio(@RequestBody Socio socio)//ok
 	{
 		try
 		{
@@ -38,7 +40,7 @@ public class RestSocio {
 	}
 	
 	@GetMapping(value = "/ricercatutto", produces = "application/json")
-	public ResponseEntity<Iterable<Socio>> ricercaTutto()
+	public ResponseEntity<Iterable<Socio>> ricercaTutto()//ok
 	{
 		try 
 		{
@@ -53,13 +55,13 @@ public class RestSocio {
 	}
 	
 	@GetMapping(value = "/ricerca/{username}", produces = "application/json")
-	public ResponseEntity<Socio> ricercaSocioByUsername(@PathVariable("username") String username)
+	public ResponseEntity<Socio> ricercaSocioByUsername(@PathVariable("username") String username)//ok
 	{
 		try 
 		{
 			Optional<Socio> socio = socioService.ricercaSocioByUsername(username);
 			
-			if (socio != null)
+			if (!socio.isEmpty())
 			{
 				return new ResponseEntity<Socio>(socio.get(), HttpStatus.OK);
 			}
@@ -75,4 +77,35 @@ public class RestSocio {
 		
 		
 	}
+
+	@DeleteMapping(value = "/cancella/{username}")
+	public ResponseEntity cancellaSocioByUsername(@PathVariable("username") String username) //ok
+	{
+		try
+		{
+			socioService.cancellaSocioByUsername(username);
+			return new ResponseEntity(HttpStatus.OK);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/*
+	//nel json i campi devono essere già aggiornati
+	@PutMapping(value = "/modifica/{username}", produces = "application/json")
+	public ResponseEntity updateSocio(@RequestBody Socio socio, @PathVariable("username") String username)
+	{
+		try 
+		{
+			socioService.updateSocio(socio.getUsername(), socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	*/ //da provare
 }

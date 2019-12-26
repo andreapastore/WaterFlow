@@ -29,4 +29,14 @@ public class SocioService
 		return socioRepository.findById(username);
 	}
 
+	public void cancellaSocioByUsername(String username) 
+	{
+		socioRepository.deleteById(username);
+	}
+
+	public void updateSocio(String username, String abilitato, String barca, String password, String postazione, String profilo) 
+	{
+		socioRepository.updateSocio(username, abilitato, barca, password, postazione, profilo);	
+	}
+
 }

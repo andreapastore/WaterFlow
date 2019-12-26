@@ -22,5 +22,11 @@ public interface SocioRepository extends CrudRepository<Socio, String>
 	@Query(value = "SELECT * FROM socio WHERE username = ?1", nativeQuery = true)
 	public Optional<Socio> findById(@Param("username") String username);
 	
+	@Transactional
+	@Query(value = "DELETE FROM socio WHERE username = ?1", nativeQuery = true)
+	public void deleteById(@Param("username") String username);
 
+	@Transactional
+	@Query(value = "UPDATE socio SET username = ?1, abilitato = ?2, barca = ?3, password = ?4, postazione = ?5, profilo =?6", nativeQuery = true )
+	public void updateSocio(String username, String abilitato, String barca, String password, String postazione, String profilo);
 }
