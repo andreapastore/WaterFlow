@@ -21,7 +21,7 @@ public class RestFlussoAcqua {
 	{
 		try
 		{
-			ledService.lightOn();
+			//ledService.lightOn();
 			System.out.println("SONO NELLA APRIIIIIIIIIII");
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
@@ -36,7 +36,7 @@ public class RestFlussoAcqua {
 	{
 		try
 		{
-			ledService.lightOff();
+			//ledService.lightOff();
 			System.out.println("SONO NELLA CHIUDIIIIII");
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
