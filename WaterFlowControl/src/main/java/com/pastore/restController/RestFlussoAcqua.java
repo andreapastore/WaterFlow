@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pastore.service.LedService;
+import com.pastore.service.PompaStatusService;
 
 @RestController
 @RequestMapping(value = "/api/flussoAcqua")
@@ -16,11 +17,17 @@ public class RestFlussoAcqua {
 	@Autowired
 	private LedService ledService;
 	
+	@Autowired
+	private PompaStatusService pompaStatusService;
+	
+	
+	//simulo l'attivazione della pompa 1 
 	@GetMapping(value = "/apri", produces = "application/json")
 	public ResponseEntity<HttpStatus> apri()
 	{
 		try
 		{
+			pompaStatusService.updateStatus("attiva", 1);
 			//ledService.lightOn();
 			System.out.println("SONO NELLA APRIIIIIIIIIII");
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -31,11 +38,14 @@ public class RestFlussoAcqua {
 		}
 	}
 	
+	
+	//simulo la disattivazione della pompa 1
 	@GetMapping(value = "/chiudi", produces = "application/json")
 	public ResponseEntity<HttpStatus> chiudi()
 	{
 		try
 		{
+			pompaStatusService.updateStatus("disattiva", 1);
 			//ledService.lightOff();
 			System.out.println("SONO NELLA CHIUDIIIIII");
 			return new ResponseEntity<>(HttpStatus.OK);
