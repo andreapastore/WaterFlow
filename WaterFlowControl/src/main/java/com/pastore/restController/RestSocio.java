@@ -91,7 +91,6 @@ public class RestSocio {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
 	
 	//nel json i campi devono essere già aggiornati
 	@PutMapping(value = "/modifica/{username}", produces = "application/json")
@@ -124,7 +123,7 @@ public class RestSocio {
 	}
 	
 	@PostMapping(value = "/updatePass/{username}")
-	public ResponseEntity updatePasswordConUser(@RequestBody Socio socio, @PathVariable("username") String username)
+	public ResponseEntity updatePasswordConUser(@RequestBody Socio socio, @PathVariable("username") String username) //ok
 	{
 		try 
 		{
