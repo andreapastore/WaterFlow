@@ -28,5 +28,5 @@ public interface SocioRepository extends CrudRepository<Socio, String>
 
 	@Transactional
 	@Query(value = "UPDATE socio SET username = ?1, abilitato = ?2, barca = ?3, password = ?4, postazione = ?5, profilo =?6", nativeQuery = true )
-	public void updateSocio(String username, String abilitato, String barca, String password, String postazione, String profilo);
+	public void updateSocio(@Param("username") String username, @Param("abilitato") String abilitato, @Param("barca") String barca, @Param("password") String password, @Param("postazione") String postazione, @Param("profilo") String profilo);
 }

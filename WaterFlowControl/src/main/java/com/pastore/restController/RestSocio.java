@@ -92,14 +92,15 @@ public class RestSocio {
 		}
 	}
 
-	/*
+	
 	//nel json i campi devono essere già aggiornati
 	@PutMapping(value = "/modifica/{username}", produces = "application/json")
-	public ResponseEntity updateSocio(@RequestBody Socio socio, @PathVariable("username") String username)
+	public ResponseEntity updateSocio(@RequestBody Socio socio, @PathVariable("username") String username) //ok
 	{
 		try 
 		{
-			socioService.updateSocio(socio.getUsername(), socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
+			socioService.updateSocio(username, socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
+			return new ResponseEntity<>(HttpStatus.OK);
 		} 
 		catch (Exception e) 
 		{
@@ -107,5 +108,36 @@ public class RestSocio {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	*/ //da provare
+	
+	@PostMapping(value = "/updatePass", produces = "application/json")
+	public ResponseEntity updatePassword(@RequestBody Socio socio) //ok
+	{
+		try 
+		{
+			socioService.updateSocio(socio.getUsername(), socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) 
+		{
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping(value = "/updatePass/{username}")
+	public ResponseEntity updatePasswordConUser(@RequestBody Socio socio, @PathVariable("username") String username)
+	{
+		try 
+		{
+			socioService.updateSocio(username, socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
+			return new ResponseEntity(HttpStatus.OK);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	 
 }
