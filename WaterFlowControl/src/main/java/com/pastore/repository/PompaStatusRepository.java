@@ -19,5 +19,8 @@ public interface PompaStatusRepository extends CrudRepository<PompaStatus, Integ
 	@Modifying
 	@Query(value = "UPDATE pompastatus SET status = :status WHERE id = :id", nativeQuery = true)
 	public void updateStatus(@Param("status") String status, @Param("id") int id);
+
+	@Query(value = "SELECT * FROM pompastatus WHERE id = ?1", nativeQuery = true)
+	PompaStatus getPompaStatusById(@Param("id") int id);
 	
 }

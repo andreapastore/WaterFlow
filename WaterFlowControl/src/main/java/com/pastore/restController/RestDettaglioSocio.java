@@ -21,7 +21,7 @@ public class RestDettaglioSocio {
 	private DettaglioSocioService dettaglioSocioService;
 	
 	@PostMapping(value = "/insertdett", produces = "application/json")
-	public ResponseEntity saveDettaglioSocio(@RequestBody DettaglioSocio dettaglioSocio)
+	public ResponseEntity saveDettaglioSocio(@RequestBody DettaglioSocio dettaglioSocio) //ok
 	{
 		try 
 		{
@@ -36,7 +36,7 @@ public class RestDettaglioSocio {
 	}
 	
 	@GetMapping(value = "/dettaglio/{id}", produces = "application/json")
-	public ResponseEntity<DettaglioSocio> getDettaglioSocioById(@PathVariable("id") String id)
+	public ResponseEntity<DettaglioSocio> getDettaglioSocioById(@PathVariable("id") String id) //ok
 	{
 		try 
 		{
