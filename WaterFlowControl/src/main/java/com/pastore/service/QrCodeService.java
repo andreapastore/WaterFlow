@@ -59,4 +59,9 @@ public class QrCodeService {
 		return false;
 			
 	}
+
+	public QrCode findById(int id) 
+	{
+		return qrCodeRepository.findById(id);
+	}
 }

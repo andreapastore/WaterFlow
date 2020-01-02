@@ -27,4 +27,7 @@ public interface QrCodeRepository extends CrudRepository<QrCode, Integer>
 
 	@Query(value = "SELECT * FROM qrcode", nativeQuery = true)
 	public Iterable<QrCode> findAll();
+
+	@Query(value = "SELECT * FROM qrcode WHERE id = ?1", nativeQuery = true)
+	public QrCode findById(@Param("id") int id);
 }

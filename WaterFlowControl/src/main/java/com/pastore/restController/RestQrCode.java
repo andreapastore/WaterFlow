@@ -87,4 +87,10 @@ public class RestQrCode
 			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	@GetMapping(value = "/code/{id}")
+	public QrCode findById(@PathVariable("id") int id) //ok
+	{
+		return qrCodeService.findById(id);
+	}
 }
