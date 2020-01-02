@@ -1,6 +1,8 @@
 package com.pastore.restController;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,9 +59,32 @@ public class RestQrCode
 	}
 
 	@PostMapping(value = "/insert", produces = "application/json")
-	public QrCode saveQrCode(@RequestBody QrCode qrCode)
+	public QrCode saveQrCode(@RequestBody QrCode qrCode) //ok
 	{
 		qrCodeService.save(qrCode);
 		return null;
+	}
+	
+	@PostMapping(value = "/ricercaQrCode", produces = "application/json")
+	public ResponseEntity confrontaQrCode(@RequestBody QrCode qrCode) //ok
+	{
+		try
+		{
+			if (qrCodeService.confrontaQrCode(qrCode))
+			{
+				System.out.println("ho trovato il qrCode corrispondente");
+				return new ResponseEntity(HttpStatus.OK);
+			}
+			else
+			{
+				System.out.println("non ho trovato il qrcode corrispondente");
+				return new ResponseEntity(HttpStatus.NOT_FOUND);
+			}
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

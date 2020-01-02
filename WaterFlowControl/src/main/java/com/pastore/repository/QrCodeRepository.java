@@ -24,4 +24,7 @@ public interface QrCodeRepository extends CrudRepository<QrCode, Integer>
 	
 	@Query(value = "INSERT INTO qrcode (id, codice_pompa_uno, codice_pompa_due, codice_pompa_tre) VALUES (?1, ?2, ?3, ?4)", nativeQuery = true)
 	public void save(@Param("id") int id, @Param("codice_pompa_uno") String codice_pompa_uno, @Param("codice_pompa_due") String codice_pompa_due, @Param("codice_pompa_tre") String codice_pompa_tre);
+
+	@Query(value = "SELECT * FROM qrcode", nativeQuery = true)
+	public Iterable<QrCode> findAll();
 }
