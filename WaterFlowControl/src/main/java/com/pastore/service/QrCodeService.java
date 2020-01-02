@@ -64,4 +64,10 @@ public class QrCodeService {
 	{
 		return qrCodeRepository.findById(id);
 	}
+	
+
+	public void updateQrCode(QrCode qrCode, int id) 
+	{
+		qrCodeRepository.updateQrCode(qrCode.getId(), qrCode.getCodice_pompa_uno(), qrCode.getCodice_pompa_due(), qrCode.getCodice_pompa_tre(), id);
+	}
 }

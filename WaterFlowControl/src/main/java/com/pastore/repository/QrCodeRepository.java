@@ -30,4 +30,7 @@ public interface QrCodeRepository extends CrudRepository<QrCode, Integer>
 
 	@Query(value = "SELECT * FROM qrcode WHERE id = ?1", nativeQuery = true)
 	public QrCode findById(@Param("id") int id);
+
+	@Query(value = "UPDATE qrcode SET id = ?1, codice_pompa_uno = ?2, codice_pompa_due = ?3, codice_pompa_tre = ?4 WHERE id = ?5", nativeQuery = true)
+	public void updateQrCode(int id, String codice_pompa_uno, String codice_pompa_due, String codice_pompa_tre, int id2);
 }

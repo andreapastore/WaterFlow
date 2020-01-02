@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -92,5 +93,20 @@ public class RestQrCode
 	public QrCode findById(@PathVariable("id") int id) //ok
 	{
 		return qrCodeService.findById(id);
+	}
+
+	@PutMapping(value = "/modifica/{id}", produces = "application/json")
+	public ResponseEntity<HttpStatus> updateQrCode(@RequestBody QrCode qrCode, @PathVariable("id") int id)
+	{
+		try 
+		{
+			qrCodeService.updateQrCode(qrCode, id);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }
