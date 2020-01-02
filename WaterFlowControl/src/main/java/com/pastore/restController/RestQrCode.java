@@ -3,9 +3,12 @@ package com.pastore.restController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pastore.entity.QrCode;
 import com.pastore.handlers.StringHandler;
 import com.pastore.service.QrCodeService;
 
@@ -17,7 +20,7 @@ public class RestQrCode
 	private QrCodeService qrCodeService;
 	
 	@GetMapping(value = "/codice/{numero}", produces = "application/json")
-	public String getCodicePompa(@PathVariable("numero") String numero)
+	public String getCodicePompa(@PathVariable("numero") String numero) //ok
 	{
 		try 
 		{
@@ -51,5 +54,12 @@ public class RestQrCode
 			e.printStackTrace();
 			return "no content";
 		}
+	}
+
+	@PostMapping(value = "/insert", produces = "application/json")
+	public QrCode saveQrCode(@RequestBody QrCode qrCode)
+	{
+		qrCodeService.save(qrCode);
+		return null;
 	}
 }

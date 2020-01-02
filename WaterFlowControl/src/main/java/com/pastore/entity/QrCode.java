@@ -21,7 +21,7 @@ public class QrCode implements Serializable
 	private String codice_pompa_uno;
 	
 	@Column(name = "codice_pompa_due")
-	private String codie_pompa_due;
+	private String codice_pompa_due;
 	
 	@Column(name = "codice_pompa_tre")
 	private String codice_pompa_tre;
@@ -44,12 +44,12 @@ public class QrCode implements Serializable
 		this.codice_pompa_uno = codice_pompa_uno;
 	}
 
-	public String getCodie_pompa_due() {
-		return codie_pompa_due;
+	public String getCodice_pompa_due() {
+		return codice_pompa_due;
 	}
 
-	public void setCodie_pompa_due(String codie_pompa_due) {
-		this.codie_pompa_due = codie_pompa_due;
+	public void setCodice_pompa_due(String codie_pompa_due) {
+		this.codice_pompa_due = codie_pompa_due;
 	}
 
 	public String getCodice_pompa_tre() {
