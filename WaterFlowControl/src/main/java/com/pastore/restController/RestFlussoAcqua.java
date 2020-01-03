@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pastore.service.FlussoAcquaService;
 import com.pastore.service.LedService;
 import com.pastore.service.PompaStatusService;
 
@@ -18,7 +19,7 @@ public class RestFlussoAcqua {
 	private LedService ledService;
 	
 	@Autowired
-	private PompaStatusService pompaStatusService;
+	private FlussoAcquaService flussoAcquaService;
 	
 	
 	//simulo l'attivazione della pompa 1 
@@ -27,7 +28,7 @@ public class RestFlussoAcqua {
 	{
 		try
 		{
-			pompaStatusService.updateStatus("attiva", 1);
+			flussoAcquaService.apri();
 			//ledService.lightOn();
 			System.out.println("SONO NELLA APRIIIIIIIIIII");
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -45,7 +46,7 @@ public class RestFlussoAcqua {
 	{
 		try
 		{
-			pompaStatusService.updateStatus("disattiva", 1);
+			flussoAcquaService.chiudi();
 			//ledService.lightOff();
 			System.out.println("SONO NELLA CHIUDIIIIII");
 			return new ResponseEntity<>(HttpStatus.OK);

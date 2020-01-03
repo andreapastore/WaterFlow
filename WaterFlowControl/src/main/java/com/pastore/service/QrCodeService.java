@@ -1,7 +1,5 @@
 package com.pastore.service;
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-
 import java.util.List;
 
 import org.assertj.core.util.Lists;
@@ -10,12 +8,16 @@ import org.springframework.stereotype.Service;
 
 import com.pastore.entity.QrCode;
 import com.pastore.repository.QrCodeRepository;
+import com.pastore.timers.ScansioneQrCodeTimer;
 
 @Service
 public class QrCodeService {
 
 	@Autowired
 	private QrCodeRepository qrCodeRepository;
+	
+	@Autowired
+	ScansioneQrCodeTimer codeTimer;
 	
 	public String codicePompa(int id) 
 	{
@@ -65,9 +67,13 @@ public class QrCodeService {
 		return qrCodeRepository.findById(id);
 	}
 	
-
 	public void updateQrCode(QrCode qrCode, int id) 
 	{
 		qrCodeRepository.updateQrCode(qrCode.getId(), qrCode.getCodice_pompa_uno(), qrCode.getCodice_pompa_due(), qrCode.getCodice_pompa_tre(), id);
+	}
+
+	public void startTimer()
+	{
+		codeTimer.start();
 	}
 }

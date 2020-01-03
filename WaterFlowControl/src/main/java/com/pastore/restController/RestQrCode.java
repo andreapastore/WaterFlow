@@ -67,25 +67,26 @@ public class RestQrCode
 	}
 	
 	@PostMapping(value = "/ricercaQrCode", produces = "application/json")
-	public ResponseEntity confrontaQrCode(@RequestBody QrCode qrCode) //ok
+	public ResponseEntity<HttpStatus> confrontaQrCode(@RequestBody QrCode qrCode) //ok
 	{
 		try
 		{
 			if (qrCodeService.confrontaQrCode(qrCode))
 			{
+				qrCodeService.startTimer(); //avvio timer dopo check positivo sul qrcode
 				System.out.println("ho trovato il qrCode corrispondente");
-				return new ResponseEntity(HttpStatus.OK);
+				return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 			}
 			else
 			{
 				System.out.println("non ho trovato il qrcode corrispondente");
-				return new ResponseEntity(HttpStatus.NOT_FOUND);
+				return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
 			}
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
