@@ -21,7 +21,6 @@ public class RestFlussoAcqua {
 	@Autowired
 	private FlussoAcquaService flussoAcquaService;
 	
-	
 	//simulo l'attivazione della pompa 1 
 	@GetMapping(value = "/apri", produces = "application/json")
 	public ResponseEntity<HttpStatus> apri()
@@ -46,6 +45,7 @@ public class RestFlussoAcqua {
 	{
 		try
 		{
+			flussoAcquaService.setChiusa_da_utente(true);
 			flussoAcquaService.chiudi();
 			//ledService.lightOff();
 			System.out.println("SONO NELLA CHIUDIIIIII");

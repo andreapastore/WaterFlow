@@ -10,7 +10,7 @@ public class ScansioneQrCodeTimer extends Thread
 	@Override
 	public void run() 
 	{
-		System.out.println("sono partito");
+		System.out.println("timer scansione qrcode partito");
 		try 
 		{
 			Thread.sleep(60000);
