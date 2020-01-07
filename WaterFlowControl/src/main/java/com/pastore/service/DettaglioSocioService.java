@@ -16,9 +16,9 @@ public class DettaglioSocioService
 		dettaglioSocioRepository.saveDettaglioSocio(username, apertura, chiusura, data_attivazione_slot, minuti, minuti_totali, quantita_acqua, socio_username);
 	}
 	
-	public void updateDettaglioSocio()
+	public void updateDettaglioSocio(String username, String apertura, String chiusura, String data_attivazione_slot, int minuti, int minuti_totali, int quantita_acqua, String socio_username)
 	{
-		
+		dettaglioSocioRepository.updateDettaglioSocio(username, apertura, chiusura, data_attivazione_slot, minuti, minuti_totali, quantita_acqua, socio_username);
 	}
 	
 	public DettaglioSocio getDettaglioSocioById(String id)
@@ -30,4 +30,5 @@ public class DettaglioSocioService
 	{
 		return dettaglioSocioRepository.getMinutiTotali(id);
 	}
+
 }

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import com.pastore.builders.DettaglioSocioBuilder;
 import com.pastore.entity.DettaglioSocio;
-import com.pastore.handlers.TimeHandler;
 import com.pastore.timers.FlussoAcquaTimer;
 import com.pastore.timers.ScansioneQrCodeTimer;
 
@@ -18,7 +17,6 @@ public class FlussoAcquaService
 	@Autowired
 	private PompaStatusService pompaStatusService;
 	
-	@Autowired
 	private FlussoAcquaTimer acquaTimer;
 	
 	@Autowired
@@ -26,6 +24,7 @@ public class FlussoAcquaService
 	
 	private boolean chiusa_da_utente;
 	private DettaglioSocioBuilder dettaglioSocioBuilder;
+	private boolean dettagliosocio_esistente;
 	
 	public void apri() 
 	{
@@ -33,26 +32,27 @@ public class FlussoAcquaService
 		disattivaTimerQrCode();
 		attivaTimerFlussoAcqua();
 		pompaStatusService.updateStatus("attiva", 1);
-		//prima di chiamare il dettaglio socio builder fare il check se esiste nel db o è il primo record
-		dettaglioSocioBuilder = new DettaglioSocioBuilder("user", 0);
-		//da qui parte il timer
+		inizializzaDettaglioSocio();
 	}
 	
 	public void chiudi()
 	{
 		if(chiusa_da_utente)
 		{
-			//allora la pompa è stata chiusa dall'utente
-			//disattivare timer
-			disattivatimerAcqua();
-		}
-		else
-		{
-			//pompa non chiusa dall'utente, il timer deve scattare
-		}
+			disattivaTimerAcqua();
+			DettaglioSocio dettaglioSocio = dettaglioSocioBuilder.getDettaglioSocioAggiornato();
+			if (dettagliosocio_esistente)
+			{
+				dettaglioSocioService.updateDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
+			}
+			else
+			{
+				dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
 		
-		//aggiorna dettaglisocio utilizzatore
-		pompaStatusService.updateStatus("disattiva", 1);
+			}
+
+			pompaStatusService.updateStatus("disattiva", 1);
+		}
 	}
 	
 	public boolean isChiusa_da_utente() 
@@ -72,10 +72,11 @@ public class FlussoAcquaService
 	
 	private void attivaTimerFlussoAcqua()
 	{
+		acquaTimer = new FlussoAcquaTimer(this);
 		acquaTimer.start();
 	}
 	
-	private void disattivatimerAcqua()
+	private void disattivaTimerAcqua()
 	{
 		acquaTimer.setFlusso_chiuso_da_utente(true);
 	}
@@ -85,7 +86,33 @@ public class FlussoAcquaService
 		if(!chiusa_da_utente)
 		{
 			DettaglioSocio dettaglioSocio = dettaglioSocioBuilder.getDettaglioSocioAggiornato();
-			dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
+			if (dettagliosocio_esistente)
+			{
+				dettaglioSocioService.updateDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
+			}
+			else
+			{
+				dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
+		
+			}
+
+			pompaStatusService.updateStatus("disattiva", 1);
+		}
+	}
+
+	public void inizializzaDettaglioSocio()
+	{
+		DettaglioSocio dettaglioSocio = null;
+		dettaglioSocio = dettaglioSocioService.getDettaglioSocioById("andreapastore");
+		if (dettaglioSocio == null)
+		{
+			dettaglioSocioBuilder = new DettaglioSocioBuilder("andreapastore", 0);
+			dettagliosocio_esistente = false;
+		}
+		else
+		{
+			dettagliosocio_esistente = true;
+			dettaglioSocioBuilder = new DettaglioSocioBuilder(dettaglioSocio.getId(), dettaglioSocio.getMinuti_totali());
 		}
 	}
 }

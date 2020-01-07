@@ -1,18 +1,18 @@
 package com.pastore.timers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.pastore.service.FlussoAcquaService;
 
-@Component
 public class FlussoAcquaTimer extends Thread
 {
-	@Autowired
 	private FlussoAcquaService acquaService;
 	
 	private boolean flusso_chiuso_da_utente;
 	
+	public FlussoAcquaTimer(FlussoAcquaService f)
+	{
+		this.acquaService = f;
+	}
+
 	public boolean isFlusso_chiuso_da_utente() 
 	{
 		return flusso_chiuso_da_utente;
