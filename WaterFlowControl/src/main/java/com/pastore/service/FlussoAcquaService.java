@@ -3,6 +3,9 @@ package com.pastore.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pastore.builders.DettaglioSocioBuilder;
+import com.pastore.entity.DettaglioSocio;
+import com.pastore.handlers.TimeHandler;
 import com.pastore.timers.FlussoAcquaTimer;
 import com.pastore.timers.ScansioneQrCodeTimer;
 
@@ -18,7 +21,11 @@ public class FlussoAcquaService
 	@Autowired
 	private FlussoAcquaTimer acquaTimer;
 	
+	@Autowired
+	private DettaglioSocioService dettaglioSocioService;
+	
 	private boolean chiusa_da_utente;
+	private DettaglioSocioBuilder dettaglioSocioBuilder;
 	
 	public void apri() 
 	{
@@ -26,6 +33,8 @@ public class FlussoAcquaService
 		disattivaTimerQrCode();
 		attivaTimerFlussoAcqua();
 		pompaStatusService.updateStatus("attiva", 1);
+		//prima di chiamare il dettaglio socio builder fare il check se esiste nel db o è il primo record
+		dettaglioSocioBuilder = new DettaglioSocioBuilder("user", 0);
 		//da qui parte il timer
 	}
 	
@@ -69,5 +78,14 @@ public class FlussoAcquaService
 	private void disattivatimerAcqua()
 	{
 		acquaTimer.setFlusso_chiuso_da_utente(true);
+	}
+
+	public void chiudiDaTimer() 
+	{
+		if(!chiusa_da_utente)
+		{
+			DettaglioSocio dettaglioSocio = dettaglioSocioBuilder.getDettaglioSocioAggiornato();
+			dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
+		}
 	}
 }

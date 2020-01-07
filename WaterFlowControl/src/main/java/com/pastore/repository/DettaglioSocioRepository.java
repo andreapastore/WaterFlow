@@ -21,4 +21,7 @@ public interface DettaglioSocioRepository extends CrudRepository<DettaglioSocio,
 	@Query(value = "SELECT * FROM dettagliosocio WHERE id = ?1", nativeQuery = true)
 	public DettaglioSocio getDettaglioSocioByUsername(@Param("id") String id);
 	
+	@Query(value = "select minuti_totali from dettagliosocio where id = ?1", nativeQuery = true)
+	public int getMinutiTotali(@Param("id") String id);
+	
 }

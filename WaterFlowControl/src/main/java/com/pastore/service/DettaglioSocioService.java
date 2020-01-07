@@ -2,7 +2,6 @@ package com.pastore.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.pastore.entity.DettaglioSocio;
 import com.pastore.repository.DettaglioSocioRepository;
 
@@ -25,5 +24,10 @@ public class DettaglioSocioService
 	public DettaglioSocio getDettaglioSocioById(String id)
 	{
 		return dettaglioSocioRepository.getDettaglioSocioByUsername(id);
+	}
+
+	public int getMinutiTotali(String id)
+	{
+		return dettaglioSocioRepository.getMinutiTotali(id);
 	}
 }

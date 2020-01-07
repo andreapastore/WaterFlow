@@ -38,7 +38,7 @@ public class FlussoAcquaTimer extends Thread
 			else
 			{
 				System.out.println("l'utente NON ha chiuso il flusso acqua quindi chiamo io la chiudi di FlussoAcquaService");
-				acquaService.chiudi();
+				acquaService.chiudiDaTimer();
 			}
 		} 
 		catch (Exception e) 
