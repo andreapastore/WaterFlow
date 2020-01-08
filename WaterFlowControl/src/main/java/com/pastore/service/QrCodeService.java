@@ -122,7 +122,7 @@ public class QrCodeService
 	public void disattivaPompa() 
 	{
 		pompaStatusService.updateStatus("disattiva", numero_pompa_occupata);
-		System.out.println("la pompa" + numero_pompa_occupata + "è stata dichiarata disattiva ");
+		System.out.println("la pompa " + numero_pompa_occupata + " è stata dichiarata disattiva ");
 	}
 
 	public void attivaPompa()
