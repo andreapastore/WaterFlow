@@ -25,7 +25,7 @@ public class RestSocio {
 	SocioService socioService;
 	
 	@PostMapping(value = "/insert", produces = "application/json")
-	public ResponseEntity insertSocio(@RequestBody Socio socio)//ok
+	public ResponseEntity<HttpStatus> insertSocio(@RequestBody Socio socio)//ok
 	{
 		try
 		{
@@ -79,12 +79,12 @@ public class RestSocio {
 	}
 
 	@DeleteMapping(value = "/cancella/{username}")
-	public ResponseEntity cancellaSocioByUsername(@PathVariable("username") String username) //ok
+	public ResponseEntity<HttpStatus> cancellaSocioByUsername(@PathVariable("username") String username) //ok
 	{
 		try
 		{
 			socioService.cancellaSocioByUsername(username);
-			return new ResponseEntity(HttpStatus.OK);
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -94,7 +94,7 @@ public class RestSocio {
 	
 	//nel json i campi devono essere già aggiornati
 	@PutMapping(value = "/modifica/{username}", produces = "application/json")
-	public ResponseEntity updateSocio(@RequestBody Socio socio, @PathVariable("username") String username) //ok
+	public ResponseEntity<HttpStatus> updateSocio(@RequestBody Socio socio, @PathVariable("username") String username) //ok
 	{
 		try 
 		{
@@ -109,7 +109,7 @@ public class RestSocio {
 	}
 	
 	@PostMapping(value = "/updatePass", produces = "application/json")
-	public ResponseEntity updatePassword(@RequestBody Socio socio) //ok
+	public ResponseEntity<HttpStatus> updatePassword(@RequestBody Socio socio) //ok
 	{
 		try 
 		{
@@ -123,20 +123,18 @@ public class RestSocio {
 	}
 	
 	@PostMapping(value = "/updatePass/{username}")
-	public ResponseEntity updatePasswordConUser(@RequestBody Socio socio, @PathVariable("username") String username) //ok
+	public ResponseEntity<HttpStatus> updatePasswordConUser(@RequestBody Socio socio, @PathVariable("username") String username) //ok
 	{
 		try 
 		{
 			socioService.updateSocio(username, socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
-			return new ResponseEntity(HttpStatus.OK);
+			return new ResponseEntity<>(HttpStatus.OK);
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
-	
-	 
 }

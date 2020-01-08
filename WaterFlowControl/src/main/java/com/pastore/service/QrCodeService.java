@@ -20,9 +20,10 @@ public class QrCodeService
 	private PompaStatusService pompaStatusService;
 	
 	@Autowired
-	ScansioneQrCodeTimer codeTimer;
+	private ScansioneQrCodeTimer codeTimer;
 	
 	private QrCode qrCodeTrovato;
+	private int numero_pompa_occupata;
 	
 	public String codicePompa(int id) 
 	{
@@ -89,16 +90,43 @@ public class QrCodeService
 		if(qrCode.getCodice_pompa_uno().equals(qrCodeTrovato.getCodice_pompa_uno()))
 		{
 			System.out.println("se non è occpuata attivo la pompa 1");
-			//blocca pompa 1
+			pompaStatusService.updateStatus("occupata", 1);
+			numero_pompa_occupata = 1;
 		}
 		else if(qrCode.getCodice_pompa_due().equals(qrCodeTrovato.getCodice_pompa_due()))
 		{
 			System.out.println("se non è occpuata attivo la pompa 2");
-			//blocca pompa 2
+			pompaStatusService.updateStatus("occupata", 2);
+			numero_pompa_occupata = 2;
 		}
 		else if(qrCode.getCodice_pompa_tre().equals(qrCodeTrovato.getCodice_pompa_tre()))
 		{
 			System.out.println("se non è occpuata attivo la pompa 3");
+			pompaStatusService.updateStatus("occupata", 3);
+			numero_pompa_occupata = 3;
 		}
+	}
+
+	
+	public int getNumero_pompa_occupata() 
+	{
+		return numero_pompa_occupata;
+	}
+	
+
+	public void setNumero_pompa_occupata(int numero_pompa_occupata) 
+	{
+		this.numero_pompa_occupata = numero_pompa_occupata;
+	}
+
+	public void disattivaPompa() 
+	{
+		pompaStatusService.updateStatus("disattiva", numero_pompa_occupata);
+		System.out.println("la pompa" + numero_pompa_occupata + "è stata dichiarata disattiva ");
+	}
+
+	public void attivaPompa()
+	{
+		pompaStatusService.updateStatus("attiva", numero_pompa_occupata);
 	}
 }

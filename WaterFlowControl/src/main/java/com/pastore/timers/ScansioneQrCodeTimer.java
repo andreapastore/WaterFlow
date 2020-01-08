@@ -1,10 +1,16 @@
 package com.pastore.timers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.pastore.service.QrCodeService;
 
 @Component
 public class ScansioneQrCodeTimer extends Thread
 {
+	@Autowired
+	private QrCodeService qrCodeService;
+	
 	private boolean pompa_in_uso;
 
 	@Override
@@ -20,7 +26,8 @@ public class ScansioneQrCodeTimer extends Thread
 			}
 			else
 			{
-				System.out.println("l'acqua NON è stata aperta, pompa in disuso");
+				System.out.println("l'acqua NON è stata aperta, pompa in disuso, torna disattiva");
+				qrCodeService.disattivaPompa();
 			}
 			
 		} 

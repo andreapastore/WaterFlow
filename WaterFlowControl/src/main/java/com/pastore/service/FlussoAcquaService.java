@@ -22,6 +22,9 @@ public class FlussoAcquaService
 	@Autowired
 	private DettaglioSocioService dettaglioSocioService;
 	
+	@Autowired
+	private QrCodeService qrCodeService;
+	
 	private boolean chiusa_da_utente;
 	private DettaglioSocioBuilder dettaglioSocioBuilder;
 	private boolean dettagliosocio_esistente;
@@ -31,7 +34,6 @@ public class FlussoAcquaService
 		chiusa_da_utente = false;
 		disattivaTimerQrCode();
 		attivaTimerFlussoAcqua();
-		pompaStatusService.updateStatus("attiva", 1);
 		inizializzaDettaglioSocio();
 	}
 	
@@ -50,8 +52,7 @@ public class FlussoAcquaService
 				dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
 		
 			}
-
-			pompaStatusService.updateStatus("disattiva", 1);
+			qrCodeService.disattivaPompa();
 		}
 	}
 	
@@ -96,7 +97,7 @@ public class FlussoAcquaService
 		
 			}
 
-			pompaStatusService.updateStatus("disattiva", 1);
+			qrCodeService.disattivaPompa();
 		}
 	}
 
