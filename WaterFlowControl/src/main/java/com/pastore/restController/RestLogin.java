@@ -1,6 +1,13 @@
 package com.pastore.restController;
 
+import java.io.IOException;
 import java.util.Optional;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +26,9 @@ public class RestLogin
 	private SocioService socioService;
 	
 	@GetMapping(value = "/login", produces = "application/json")
-	public ResponseEntity<Socio> socioLogin(@RequestBody Socio socio)
+	public ResponseEntity<Socio> socioLogin(@RequestBody Socio socio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
+		
 		try 
 		{
 			Optional<Socio> s = socioService.ricercaSocioByUsername(socio.getUsername());
@@ -29,6 +37,17 @@ public class RestLogin
 				if (socio.getPassword().equals(s.get().getPassword()))
 				{
 					System.out.println("ho trovato il socio");
+					HttpSession oldSession = request.getSession(false);
+					if(oldSession != null)
+					{
+						System.out.println("SONO QUI");
+						oldSession.invalidate();
+					}
+					HttpSession currentSession = request.getSession();
+					currentSession.setAttribute(s.get().getUsername(), s.get());
+					Socio ss = (Socio) currentSession.getAttribute(s.get().getUsername());
+					System.out.println(ss.getUsername());
+					currentSession.setMaxInactiveInterval(5*60);
 					return new ResponseEntity<>(s.get(), HttpStatus.OK);
 				}
 				else
@@ -45,6 +64,29 @@ public class RestLogin
 			}
 			
 			
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping(value = "/logout")
+	public ResponseEntity<HttpStatus> socioLogout(@RequestBody Socio socio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+		HttpSession session = request.getSession();
+		Socio ss = (Socio) session.getAttribute(socio.getUsername());
+		System.out.println(ss.getUsername());
+		
+		try 
+		{
+			if(session != null)
+			{
+				System.out.println("logout andato a buon fine");
+				session.invalidate();
+			}
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 		} 
 		catch (Exception e) 
 		{
