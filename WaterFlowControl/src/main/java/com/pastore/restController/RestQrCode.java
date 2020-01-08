@@ -75,6 +75,7 @@ public class RestQrCode
 			{
 				qrCodeService.startTimer(); //avvio timer dopo check positivo sul qrcode
 				System.out.println("ho trovato il qrCode corrispondente");
+				qrCodeService.occupaPompaCorrispondente(qrCode);
 				return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 			}
 			else

@@ -25,7 +25,7 @@ public class RestLogin
 		{
 			Optional<Socio> s = socioService.ricercaSocioByUsername(socio.getUsername());
 			if (!s.isEmpty())
-			{System.out.println("sono le password: " + socio.getPassword() + " " + s.get().getPassword());
+			{
 				if (socio.getPassword().equals(s.get().getPassword()))
 				{
 					System.out.println("ho trovato il socio");

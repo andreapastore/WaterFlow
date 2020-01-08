@@ -11,13 +11,18 @@ import com.pastore.repository.QrCodeRepository;
 import com.pastore.timers.ScansioneQrCodeTimer;
 
 @Service
-public class QrCodeService {
-
+public class QrCodeService 
+{
 	@Autowired
 	private QrCodeRepository qrCodeRepository;
 	
 	@Autowired
+	private PompaStatusService pompaStatusService;
+	
+	@Autowired
 	ScansioneQrCodeTimer codeTimer;
+	
+	private QrCode qrCodeTrovato;
 	
 	public String codicePompa(int id) 
 	{
@@ -52,8 +57,9 @@ public class QrCodeService {
 		
 		for (int i = 0; i < myList.size(); i++)
 		{
-			if(myList.get(i).getId() == qrCode.getId())
+			if(myList.get(i).getCodice_pompa_uno().equals(qrCode.getCodice_pompa_uno()) || myList.get(i).getCodice_pompa_due().equals(qrCode.getCodice_pompa_due()) || myList.get(i).getCodice_pompa_tre().equals(qrCode.getCodice_pompa_tre()))
 			{
+				qrCodeTrovato = myList.get(i);
 				return true;
 			}
 			
@@ -75,5 +81,24 @@ public class QrCodeService {
 	public void startTimer()
 	{
 		codeTimer.start();
+	}
+	
+
+	public void occupaPompaCorrispondente(QrCode qrCode) 
+	{
+		if(qrCode.getCodice_pompa_uno().equals(qrCodeTrovato.getCodice_pompa_uno()))
+		{
+			System.out.println("se non è occpuata attivo la pompa 1");
+			//blocca pompa 1
+		}
+		else if(qrCode.getCodice_pompa_due().equals(qrCodeTrovato.getCodice_pompa_due()))
+		{
+			System.out.println("se non è occpuata attivo la pompa 2");
+			//blocca pompa 2
+		}
+		else if(qrCode.getCodice_pompa_tre().equals(qrCodeTrovato.getCodice_pompa_tre()))
+		{
+			System.out.println("se non è occpuata attivo la pompa 3");
+		}
 	}
 }
