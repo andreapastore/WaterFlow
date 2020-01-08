@@ -21,17 +21,17 @@ public class RestDettaglioSocio {
 	private DettaglioSocioService dettaglioSocioService;
 	
 	@PostMapping(value = "/insertdett", produces = "application/json")
-	public ResponseEntity saveDettaglioSocio(@RequestBody DettaglioSocio dettaglioSocio) //ok
+	public ResponseEntity<HttpStatus> saveDettaglioSocio(@RequestBody DettaglioSocio dettaglioSocio) //ok
 	{
 		try 
 		{
 			dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getSocio().getUsername());
-			return new ResponseEntity(HttpStatus.OK);
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
@@ -43,10 +43,10 @@ public class RestDettaglioSocio {
 			DettaglioSocio d = dettaglioSocioService.getDettaglioSocioById(id);
 			if (d != null)
 			{
-				return new ResponseEntity(d, HttpStatus.OK);
+				return new ResponseEntity<DettaglioSocio>(d, HttpStatus.OK);
 			}
 			else
-				return new ResponseEntity(HttpStatus.NO_CONTENT);
+				return new ResponseEntity<DettaglioSocio>(HttpStatus.NO_CONTENT);
 			
 		} 
 		catch (Exception e) 

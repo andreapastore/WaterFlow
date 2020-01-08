@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pastore.service.FlussoAcquaService;
 import com.pastore.service.LedService;
-import com.pastore.service.PompaStatusService;
 
 @RestController
 @RequestMapping(value = "/api/flussoAcqua")
 public class RestFlussoAcqua {
 	
+	@SuppressWarnings("unused")
 	@Autowired
 	private LedService ledService;
 	

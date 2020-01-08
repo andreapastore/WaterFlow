@@ -1,15 +1,13 @@
 package com.pastore.restController;
 
-import java.security.Principal;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.pastore.entity.Socio;
 import com.pastore.service.SocioService;
 
@@ -20,21 +18,25 @@ public class RestLogin
 	@Autowired
 	private SocioService socioService;
 	
-	//@Autowired
-	//private WebSecurityConfig webSecurityConfig;
-	
 	@GetMapping(value = "/login", produces = "application/json")
-	public ResponseEntity<Socio> socioLogin(Principal principal)
+	public ResponseEntity<Socio> socioLogin(@RequestBody Socio socio)
 	{
 		try 
 		{
-			String user = "user";
-			Optional<Socio> socio = socioService.ricercaSocioByUsername(user);
-			if (!socio.isEmpty())
-			{
-				System.out.println("ho trovato il socio");
-				//webSecurityConfig.salvaInConfigurazione(socio.get().getUsername(), socio.get().getPassword());
-				return new ResponseEntity<>(socio.get(), HttpStatus.OK);
+			Optional<Socio> s = socioService.ricercaSocioByUsername(socio.getUsername());
+			if (!s.isEmpty())
+			{System.out.println("sono le password: " + socio.getPassword() + " " + s.get().getPassword());
+				if (socio.getPassword().equals(s.get().getPassword()))
+				{
+					System.out.println("ho trovato il socio");
+					return new ResponseEntity<>(s.get(), HttpStatus.OK);
+				}
+				else
+				{
+					System.out.println("password errata");
+					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				}
+				
 			}
 			else
 			{
