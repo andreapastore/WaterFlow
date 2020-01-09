@@ -1,5 +1,12 @@
 package com.pastore.restController;
 
+import java.util.Enumeration;
+import java.util.Iterator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pastore.entity.QrCode;
+import com.pastore.entity.Socio;
 import com.pastore.service.QrCodeService;
 
 @RestController
@@ -65,8 +73,11 @@ public class RestQrCode
 	}
 	
 	@PostMapping(value = "/ricercaQrCode", produces = "application/json")
-	public ResponseEntity<HttpStatus> confrontaQrCode(@RequestBody QrCode qrCode) //ok
+	public ResponseEntity<HttpStatus> confrontaQrCode(@RequestBody QrCode qrCode, HttpServletRequest request, HttpServletResponse response) //ok
 	{
+		HttpSession currentSession = request.getSession();
+		Socio s = (Socio) currentSession.getAttribute(currentSession.getId().toString());
+		System.out.println("SONO IL SOCIO TROVATO COL METODO DELLA SESSIONID NELLA RESTqRCODE " + s.getUsername());
 		try
 		{
 			if (qrCodeService.confrontaQrCode(qrCode))

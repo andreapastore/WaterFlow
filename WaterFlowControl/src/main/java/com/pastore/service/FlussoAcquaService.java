@@ -1,10 +1,14 @@
 package com.pastore.service;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pastore.builders.DettaglioSocioBuilder;
 import com.pastore.entity.DettaglioSocio;
+import com.pastore.entity.Sessione;
+import com.pastore.entity.Socio;
 import com.pastore.timers.FlussoAcquaTimer;
 import com.pastore.timers.ScansioneQrCodeTimer;
 
@@ -20,10 +24,14 @@ public class FlussoAcquaService
 	@Autowired
 	private QrCodeService qrCodeService;
 	
+	//@Autowired
+	//private SessioneService sessioneService;
+	
 	private boolean chiusa_da_utente;
 	private DettaglioSocioBuilder dettaglioSocioBuilder;
 	private FlussoAcquaTimer acquaTimer;
 	private boolean dettagliosocio_esistente;
+	private String username;
 	
 	public void apri() 
 	{
@@ -100,10 +108,10 @@ public class FlussoAcquaService
 	public void inizializzaDettaglioSocio()
 	{
 		DettaglioSocio dettaglioSocio = null;
-		dettaglioSocio = dettaglioSocioService.getDettaglioSocioById("andreapastore");
+		dettaglioSocio = dettaglioSocioService.getDettaglioSocioById(username);
 		if (dettaglioSocio == null)
 		{
-			dettaglioSocioBuilder = new DettaglioSocioBuilder("andreapastore", 0);
+			dettaglioSocioBuilder = new DettaglioSocioBuilder(username, 0);
 			dettagliosocio_esistente = false;
 		}
 		else
@@ -111,5 +119,11 @@ public class FlussoAcquaService
 			dettagliosocio_esistente = true;
 			dettaglioSocioBuilder = new DettaglioSocioBuilder(dettaglioSocio.getId(), dettaglioSocio.getMinuti_totali());
 		}
+	}
+
+	public void gestisciSessione(HttpSession session) 
+	{
+		Socio s = (Socio) session.getAttribute(session.getId().toString());
+		username = s.getUsername();
 	}
 }
