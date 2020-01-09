@@ -66,7 +66,6 @@ public class QrCodeService
 			
 		}
 		return false;
-			
 	}
 
 	public QrCode findById(int id) 
@@ -83,30 +82,6 @@ public class QrCodeService
 	{
 		codeTimer.start();
 	}
-	
-
-	public void occupaPompaCorrispondente(QrCode qrCode) 
-	{
-		if(qrCode.getCodice_pompa_uno().equals(qrCodeTrovato.getCodice_pompa_uno()))
-		{
-			System.out.println("se non è occpuata attivo la pompa 1");
-			pompaStatusService.updateStatus("occupata", 1);
-			numero_pompa_occupata = 1;
-		}
-		else if(qrCode.getCodice_pompa_due().equals(qrCodeTrovato.getCodice_pompa_due()))
-		{
-			System.out.println("se non è occpuata attivo la pompa 2");
-			pompaStatusService.updateStatus("occupata", 2);
-			numero_pompa_occupata = 2;
-		}
-		else if(qrCode.getCodice_pompa_tre().equals(qrCodeTrovato.getCodice_pompa_tre()))
-		{
-			System.out.println("se non è occpuata attivo la pompa 3");
-			pompaStatusService.updateStatus("occupata", 3);
-			numero_pompa_occupata = 3;
-		}
-	}
-
 	
 	public int getNumero_pompa_occupata() 
 	{
@@ -127,6 +102,36 @@ public class QrCodeService
 
 	public void attivaPompa()
 	{
+		System.out.println("ho attivato la pompa " + numero_pompa_occupata);
 		pompaStatusService.updateStatus("attiva", numero_pompa_occupata);
+	}
+
+	public boolean controllaDisponibilitaPompaCorrispondente(QrCode qrCode) 
+	{
+		trovaPompaCorrispondente(qrCode);
+		if(pompaStatusService.getPompaStatusId(numero_pompa_occupata).equals("disattiva"))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private void trovaPompaCorrispondente(QrCode qrCode)
+	{
+		if(qrCode.getCodice_pompa_uno().equals(qrCodeTrovato.getCodice_pompa_uno()))
+		{
+			System.out.println("se non è occpuata attivo la pompa 1");
+			numero_pompa_occupata = 1;
+		}
+		else if(qrCode.getCodice_pompa_due().equals(qrCodeTrovato.getCodice_pompa_due()))
+		{
+			System.out.println("se non è occpuata attivo la pompa 2");
+			numero_pompa_occupata = 2;
+		}
+		else if(qrCode.getCodice_pompa_tre().equals(qrCodeTrovato.getCodice_pompa_tre()))
+		{
+			System.out.println("se non è occpuata attivo la pompa 3");
+			numero_pompa_occupata = 3;
+		}
 	}
 }

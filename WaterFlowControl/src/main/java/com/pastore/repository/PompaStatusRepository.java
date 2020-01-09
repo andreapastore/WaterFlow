@@ -12,8 +12,8 @@ import com.pastore.entity.PompaStatus;
 public interface PompaStatusRepository extends CrudRepository<PompaStatus, Integer>
 {
 
-	@Query(value = "SELECT * from pompastatus WHERE id =: id", nativeQuery = true)
-	int getPompaStatusId(@Param ("id") int id);
+	@Query(value = "SELECT status from pompastatus WHERE id =:id", nativeQuery = true)
+	public String getPompaStatusId(@Param ("id") int id);
 	
 	@Transactional
 	@Modifying
@@ -21,6 +21,6 @@ public interface PompaStatusRepository extends CrudRepository<PompaStatus, Integ
 	public void updateStatus(@Param("status") String status, @Param("id") int id);
 
 	@Query(value = "SELECT * FROM pompastatus WHERE id = ?1", nativeQuery = true)
-	PompaStatus getPompaStatusById(@Param("id") int id);
+	public PompaStatus getPompaStatusById(@Param("id") int id);
 	
 }

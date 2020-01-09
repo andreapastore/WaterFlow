@@ -12,7 +12,7 @@ public class PompaStatusService {
 	@Autowired
 	private PompaStatusRepository pompaStatusRepository;
 	
-	public int getPompaStatusId(int id)
+	public String getPompaStatusId(int id)
 	{
 		return pompaStatusRepository.getPompaStatusId(id);
 	}

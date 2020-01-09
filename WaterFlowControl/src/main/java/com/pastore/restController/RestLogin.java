@@ -40,13 +40,10 @@ public class RestLogin
 					HttpSession oldSession = request.getSession(false);
 					if(oldSession != null)
 					{
-						System.out.println("SONO QUI");
 						oldSession.invalidate();
 					}
 					HttpSession currentSession = request.getSession();
-					currentSession.setAttribute(s.get().getUsername(), s.get());
-					Socio ss = (Socio) currentSession.getAttribute(s.get().getUsername());
-					System.out.println(ss.getUsername());
+					currentSession.setAttribute(s.get().getUsername(), s.get());//associo alla sessione il nome dell'utente come chiave e l'oggetto socio come valore
 					currentSession.setMaxInactiveInterval(5*60);
 					return new ResponseEntity<>(s.get(), HttpStatus.OK);
 				}

@@ -55,15 +55,14 @@ public class RestQrCode
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			return "no content";
+			return "internal server error";
 		}
 	}
 
 	@PostMapping(value = "/insert", produces = "application/json")
-	public QrCode saveQrCode(@RequestBody QrCode qrCode) //ok
+	public void saveQrCode(@RequestBody QrCode qrCode) //ok
 	{
 		qrCodeService.save(qrCode);
-		return null;
 	}
 	
 	@PostMapping(value = "/ricercaQrCode", produces = "application/json")
@@ -73,10 +72,20 @@ public class RestQrCode
 		{
 			if (qrCodeService.confrontaQrCode(qrCode))
 			{
-				qrCodeService.startTimer(); //avvio timer dopo check positivo sul qrcode
 				System.out.println("ho trovato il qrCode corrispondente");
-				qrCodeService.occupaPompaCorrispondente(qrCode);
-				return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+				//una volta trovato il qrcode devo fare il check se la pompa è libera o meno
+				if(qrCodeService.controllaDisponibilitaPompaCorrispondente(qrCode))
+				{
+					qrCodeService.startTimer(); //avvio timer dopo check positivo sul qrcode e check sulla pompa (deve essere libera)
+					qrCodeService.attivaPompa();
+					return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+				}
+				else
+				{
+					System.out.println("la pompa è già stata attivata da qualche altro utente");
+					return new ResponseEntity<HttpStatus>(HttpStatus.SERVICE_UNAVAILABLE);
+				}
+				
 			}
 			else
 			{
