@@ -13,12 +13,7 @@ public class FlussoAcquaService
 {
 	@Autowired
 	private ScansioneQrCodeTimer codeTimer;
-	
-	@Autowired
-	private PompaStatusService pompaStatusService;
-	
-	private FlussoAcquaTimer acquaTimer;
-	
+
 	@Autowired
 	private DettaglioSocioService dettaglioSocioService;
 	
@@ -27,6 +22,7 @@ public class FlussoAcquaService
 	
 	private boolean chiusa_da_utente;
 	private DettaglioSocioBuilder dettaglioSocioBuilder;
+	private FlussoAcquaTimer acquaTimer;
 	private boolean dettagliosocio_esistente;
 	
 	public void apri() 

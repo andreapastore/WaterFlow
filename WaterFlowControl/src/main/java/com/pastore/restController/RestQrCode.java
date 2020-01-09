@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pastore.entity.QrCode;
-import com.pastore.handlers.StringHandler;
 import com.pastore.service.QrCodeService;
 
 @RestController
