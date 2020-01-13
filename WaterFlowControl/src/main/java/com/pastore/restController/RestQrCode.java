@@ -1,8 +1,8 @@
 package com.pastore.restController;
 
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.io.IOException;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -73,11 +73,8 @@ public class RestQrCode
 	}
 	
 	@PostMapping(value = "/ricercaQrCode", produces = "application/json")
-	public ResponseEntity<HttpStatus> confrontaQrCode(@RequestBody QrCode qrCode, HttpServletRequest request, HttpServletResponse response) //ok
+	public ResponseEntity<HttpStatus> confrontaQrCode(@RequestBody QrCode qrCode, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		HttpSession currentSession = request.getSession();
-		Socio s = (Socio) currentSession.getAttribute(currentSession.getId().toString());
-		System.out.println("SONO IL SOCIO TROVATO COL METODO DELLA SESSIONID NELLA RESTqRCODE " + s.getUsername());
 		try
 		{
 			if (qrCodeService.confrontaQrCode(qrCode))
@@ -86,8 +83,10 @@ public class RestQrCode
 				//una volta trovato il qrcode devo fare il check se la pompa è libera o meno
 				if(qrCodeService.controllaDisponibilitaPompaCorrispondente(qrCode))
 				{
-					qrCodeService.startTimer(); //avvio timer dopo check positivo sul qrcode e check sulla pompa (deve essere libera)
-					qrCodeService.attivaPompa();
+					HttpSession currentSession = request.getSession();
+					qrCodeService.attivaPompa(currentSession);
+					//Socio s = (Socio) currentSession.getAttribute(currentSession.getId().toString());
+					//qrCodeService.abilitaSocio(s);
 					return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 				}
 				else

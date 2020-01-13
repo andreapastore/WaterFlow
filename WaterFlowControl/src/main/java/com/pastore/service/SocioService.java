@@ -39,4 +39,5 @@ public class SocioService
 		socioRepository.updateSocio(username, abilitato, barca, password, postazione, profilo);	
 	}
 
+
 }

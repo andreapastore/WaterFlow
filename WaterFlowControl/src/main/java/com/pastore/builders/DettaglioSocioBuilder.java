@@ -34,4 +34,9 @@ public class DettaglioSocioBuilder
 		return dettaglioSocio;
 	}
 
+	public String getUser() 
+	{
+		return user;
+	}
+
 }

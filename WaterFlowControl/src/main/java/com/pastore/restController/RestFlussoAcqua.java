@@ -1,9 +1,10 @@
 package com.pastore.restController;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,39 +27,33 @@ public class RestFlussoAcqua {
 	@Autowired
 	private FlussoAcquaService flussoAcquaService;
 	
-	//simulo l'attivazione della pompa 1 
 	@GetMapping(value = "/apri", produces = "application/json")
-	public ResponseEntity<HttpStatus> apri(HttpServletRequest request, HttpServletResponse response)
+	public ResponseEntity<HttpStatus> apri(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		/*
-		Socio s = (Socio) currentSession.getAttribute("andreapastore");
-		System.out.println("sono il socio restituito dalla sessione " + s.getUsername());
-		*/
+		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
 		try
 		{
-			flussoAcquaService.gestisciSessione(request.getSession());
-			flussoAcquaService.apri();
+			flussoAcquaService.apri(request.getSession());
 			//ledService.lightOn();
-			System.out.println("SONO NELLA APRIIIIIIIIIII");
+			System.out.println("il socio " + s.getUsername() + " è entrato nella apri");
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
-		catch (Exception e) {
-			System.out.println(e);
+		catch (Exception e) 
+		{
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
-	
-	//simulo la disattivazione della pompa 1
 	@GetMapping(value = "/chiudi", produces = "application/json")
-	public ResponseEntity<HttpStatus> chiudi()
+	public ResponseEntity<HttpStatus> chiudi(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
+		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
 		try
 		{
-			flussoAcquaService.setChiusa_da_utente(true);
-			flussoAcquaService.chiudi();
+			flussoAcquaService.chiudi(request.getSession());
 			//ledService.lightOff();
-			System.out.println("SONO NELLA CHIUDIIIIII");
+			System.out.println("il socio " + s.getUsername() + " è entrato nella chiudi");
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 		catch (Exception e) {

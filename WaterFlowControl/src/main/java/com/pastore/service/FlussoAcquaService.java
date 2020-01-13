@@ -1,129 +1,132 @@
 package com.pastore.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.pastore.builders.DettaglioSocioBuilder;
 import com.pastore.entity.DettaglioSocio;
-import com.pastore.entity.Sessione;
+import com.pastore.entity.PompaStatus;
 import com.pastore.entity.Socio;
 import com.pastore.timers.FlussoAcquaTimer;
-import com.pastore.timers.ScansioneQrCodeTimer;
+import com.pastore.utilities.MemorizzatoreDettaglioSocioBuilder;
+import com.pastore.utilities.MemorizzatorePompaSocio;
 
 @Service
 public class FlussoAcquaService 
 {
-	@Autowired
-	private ScansioneQrCodeTimer codeTimer;
-
 	@Autowired
 	private DettaglioSocioService dettaglioSocioService;
 	
 	@Autowired
 	private QrCodeService qrCodeService;
 	
-	//@Autowired
-	//private SessioneService sessioneService;
+	@Autowired
+	private MemorizzatorePompaSocio memorizzatorePompaSocio;
 	
-	private boolean chiusa_da_utente;
-	private DettaglioSocioBuilder dettaglioSocioBuilder;
-	private FlussoAcquaTimer acquaTimer;
-	private boolean dettagliosocio_esistente;
-	private String username;
-	
-	public void apri() 
-	{
-		chiusa_da_utente = false;
-		disattivaTimerQrCode();
-		attivaTimerFlussoAcqua();
-		inizializzaDettaglioSocio();
-	}
-	
-	public void chiudi()
-	{
-		if(chiusa_da_utente)
-		{
-			disattivaTimerAcqua();
-			DettaglioSocio dettaglioSocio = dettaglioSocioBuilder.getDettaglioSocioAggiornato();
-			if (dettagliosocio_esistente)
-			{
-				dettaglioSocioService.updateDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
-			}
-			else
-			{
-				dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
-		
-			}
-			qrCodeService.disattivaPompa();
-		}
-	}
-	
-	public boolean isChiusa_da_utente() 
-	{
-		return chiusa_da_utente;
-	}
+	@Autowired
+	private MemorizzatoreDettaglioSocioBuilder memorizzatoreDettaglioSocioBuilder;
 
-	public void setChiusa_da_utente(boolean chiusa_da_utente) 
+	private List<FlussoAcquaTimer> flussoAcquaTimers;
+	
+	public void apri(HttpSession session) 
 	{
-		this.chiusa_da_utente = chiusa_da_utente;
+		disattivaTimerQrCode();
+		inizializzaDettaglioSocio(session);
+		
+	}
+	
+	public void chiudi(HttpSession currentSession)
+	{
+		disattivaTimerAcqua(currentSession);
+		Socio s = (Socio) currentSession.getAttribute(currentSession.getId().toString());
+		DettaglioSocio dettaglioSocio = memorizzatoreDettaglioSocioBuilder.getDettaglioSocioBuilder(s.getUsername()).getDettaglioSocioAggiornato();
+		DettaglioSocio d = dettaglioSocioService.getDettaglioSocioById(s.getUsername());
+		if (d != null)
+		{
+			dettaglioSocioService.updateDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
+		}
+		else
+		{
+			dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
+		}
+		PompaStatus p = memorizzatorePompaSocio.getPompa(s.getUsername());
+		qrCodeService.disattivaPompa(p);
+		
 	}
 
 	private void disattivaTimerQrCode()
 	{
-		codeTimer.setPompa_in_uso(true);
+		qrCodeService.stopTimer(true);
 	}
 	
-	private void attivaTimerFlussoAcqua()
+	private void attivaTimerFlussoAcqua(HttpSession session, DettaglioSocioBuilder dettaglioSocioBuilder)
 	{
-		acquaTimer = new FlussoAcquaTimer(this);
-		acquaTimer.start();
-	}
-	
-	private void disattivaTimerAcqua()
-	{
-		acquaTimer.setFlusso_chiuso_da_utente(true);
-	}
-
-	public void chiudiDaTimer() 
-	{
-		if(!chiusa_da_utente)
+		if (flussoAcquaTimers == null)
 		{
-			DettaglioSocio dettaglioSocio = dettaglioSocioBuilder.getDettaglioSocioAggiornato();
-			if (dettagliosocio_esistente)
-			{
-				dettaglioSocioService.updateDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
-			}
-			else
-			{
-				dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
+			flussoAcquaTimers = new ArrayList<>();
+		}
+		Socio s = (Socio) session.getAttribute(session.getId().toString());
+		if (s != null)
+		{
+			
+			FlussoAcquaTimer acquaTimer = new FlussoAcquaTimer(this, memorizzatorePompaSocio.getPompa(s.getUsername()), dettaglioSocioBuilder);
+			acquaTimer.start();
+			flussoAcquaTimers.add(acquaTimer);
+		}
+	}
+	
+	private void disattivaTimerAcqua(HttpSession session)
+	{
+		Socio s = (Socio) session.getAttribute(session.getId().toString());
 		
+		for (int i = 0; i < flussoAcquaTimers.size(); i++)
+		{
+			if(flussoAcquaTimers.get(i).getUsernameSocio() == s.getUsername())
+			{
+				flussoAcquaTimers.get(i).setFlusso_chiuso_da_utente(true);
+				flussoAcquaTimers.remove(i);
+				break;
 			}
-
-			qrCodeService.disattivaPompa();
 		}
 	}
 
-	public void inizializzaDettaglioSocio()
+	public void chiudiDaTimer(PompaStatus p, DettaglioSocioBuilder d) 
 	{
-		DettaglioSocio dettaglioSocio = null;
-		dettaglioSocio = dettaglioSocioService.getDettaglioSocioById(username);
-		if (dettaglioSocio == null)
+		DettaglioSocio dettaglioSocio = memorizzatoreDettaglioSocioBuilder.getDettaglioSocioBuilder(d.getUser()).getDettaglioSocioAggiornato();
+		DettaglioSocio dett = dettaglioSocioService.getDettaglioSocioById(d.getUser());
+		if (dett != null)
 		{
-			dettaglioSocioBuilder = new DettaglioSocioBuilder(username, 0);
-			dettagliosocio_esistente = false;
+			dettaglioSocioService.updateDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
 		}
 		else
 		{
-			dettagliosocio_esistente = true;
-			dettaglioSocioBuilder = new DettaglioSocioBuilder(dettaglioSocio.getId(), dettaglioSocio.getMinuti_totali());
+			dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
 		}
+		qrCodeService.disattivaPompa(p);
+			//elimina dettaglioSocio dal memorizzatore 
 	}
 
-	public void gestisciSessione(HttpSession session) 
+	public void inizializzaDettaglioSocio(HttpSession session)
 	{
 		Socio s = (Socio) session.getAttribute(session.getId().toString());
-		username = s.getUsername();
+		DettaglioSocio dettaglioSocio = null;
+		dettaglioSocio = dettaglioSocioService.getDettaglioSocioById(s.getUsername());
+		DettaglioSocioBuilder dettaglioSocioBuilder;
+		if (dettaglioSocio == null)
+		{
+			dettaglioSocioBuilder = new DettaglioSocioBuilder(s.getUsername(), 0);
+			memorizzatoreDettaglioSocioBuilder.inserisciDettaglioSocio(s.getUsername(), dettaglioSocioBuilder);
+		}
+		else
+		{
+			dettaglioSocioBuilder = new DettaglioSocioBuilder(dettaglioSocio.getId(), dettaglioSocio.getMinuti_totali());
+			memorizzatoreDettaglioSocioBuilder.inserisciDettaglioSocio(dettaglioSocio.getId(), dettaglioSocioBuilder);
+		}
+		attivaTimerFlussoAcqua(session, dettaglioSocioBuilder);
 	}
+
 }

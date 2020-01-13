@@ -2,13 +2,17 @@ package com.pastore.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.pastore.entity.PompaStatus;
 import com.pastore.entity.QrCode;
+import com.pastore.entity.Socio;
 import com.pastore.repository.QrCodeRepository;
 import com.pastore.timers.ScansioneQrCodeTimer;
+import com.pastore.utilities.MemorizzatorePompaSocio;
 
 @Service
 public class QrCodeService 
@@ -18,9 +22,14 @@ public class QrCodeService
 	
 	@Autowired
 	private PompaStatusService pompaStatusService;
+
+	private ScansioneQrCodeTimer codeTimer;
 	
 	@Autowired
-	private ScansioneQrCodeTimer codeTimer;
+	private SocioService socioService;
+	
+	@Autowired
+	private MemorizzatorePompaSocio memorizzatorePompaSocio;
 	
 	private QrCode qrCodeTrovato;
 	private int numero_pompa_occupata;
@@ -78,9 +87,15 @@ public class QrCodeService
 		qrCodeRepository.updateQrCode(qrCode.getId(), qrCode.getCodice_pompa_uno(), qrCode.getCodice_pompa_due(), qrCode.getCodice_pompa_tre(), id);
 	}
 
-	public void startTimer()
+	public void startTimer(PompaStatus p)
 	{
+		codeTimer = new ScansioneQrCodeTimer(this, p);
 		codeTimer.start();
+	}
+	
+	public void stopTimer(boolean b)
+	{
+		codeTimer.setPompa_in_uso(b);
 	}
 	
 	public int getNumero_pompa_occupata() 
@@ -88,22 +103,25 @@ public class QrCodeService
 		return numero_pompa_occupata;
 	}
 	
-
 	public void setNumero_pompa_occupata(int numero_pompa_occupata) 
 	{
 		this.numero_pompa_occupata = numero_pompa_occupata;
 	}
 
-	public void disattivaPompa() 
+	public void disattivaPompa(PompaStatus pompa) 
 	{
-		pompaStatusService.updateStatus("disattiva", numero_pompa_occupata);
-		System.out.println("la pompa " + numero_pompa_occupata + " è stata dichiarata disattiva ");
+		System.out.println("sono della disattiva Pompa e stampo l id della pompa che si sta per disattivare " + pompa.getId());
+		pompaStatusService.updateStatus("disattiva", pompa.getId());
 	}
 
-	public void attivaPompa()
-	{
-		System.out.println("ho attivato la pompa " + numero_pompa_occupata);
+	public void attivaPompa(HttpSession session)
+	{		
 		pompaStatusService.updateStatus("attiva", numero_pompa_occupata);
+		PompaStatus p = pompaStatusService.getPompaStatusById(numero_pompa_occupata);
+		Socio s = (Socio) session.getAttribute(session.getId().toString());
+		memorizzatorePompaSocio.insertPompa(s.getUsername(), p);
+		System.out.println("il socio " + s.getUsername() + "ha attivato la pompa tramite la lettura del qrcode " + p.getId());
+		startTimer(p);
 	}
 
 	public boolean controllaDisponibilitaPompaCorrispondente(QrCode qrCode) 
@@ -134,4 +152,23 @@ public class QrCodeService
 			numero_pompa_occupata = 3;
 		}
 	}
+
+	public void abilitaSocio(Socio s) 
+	{
+		socioService.updateSocio(s.getUsername(), "si", s.getBarca(), s.getPassword(), s.getPostazione(), s.getProfilo());
+	}
+	
+	public void disabilitaSocio(Socio s)
+	{
+		socioService.updateSocio(s.getUsername(), "no", s.getBarca(), s.getPassword(), s.getPostazione(), s.getProfilo());
+	}
+
+	public void disattivaPompaDaTimer(PompaStatus pompa) 
+	{
+		pompaStatusService.updateStatus("disattiva", pompa.getId());
+		System.out.println("la pompa " + pompa.getId() + " è stata disattivata dal QrCodeTimer");
+	}
+	
+	
+	
 }
