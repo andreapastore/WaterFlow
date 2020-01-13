@@ -47,7 +47,6 @@ public class FlussoAcquaTimer extends Thread
 			}
 			else
 			{
-				System.out.print("l'utente NON ha chiuso il flusso acqua quindi la chiude il timer ");
 				System.out.println("id della pompa che il timer flusso acqua sta per chiudere: " + pompa.getId());
 				System.out.print(" perchè l'utente " + dettaglioSocioBuilder.getUser() + " ha fatto scattare il timer");
 				acquaService.chiudiDaTimer(pompa, dettaglioSocioBuilder);

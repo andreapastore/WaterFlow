@@ -107,7 +107,7 @@ public class FlussoAcquaService
 			dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
 		}
 		qrCodeService.disattivaPompa(p);
-			//elimina dettaglioSocio dal memorizzatore 
+		memorizzatoreDettaglioSocioBuilder.deleteDettaglioSocioBuilder(dettaglioSocio.getId());
 	}
 
 	public void inizializzaDettaglioSocio(HttpSession session)

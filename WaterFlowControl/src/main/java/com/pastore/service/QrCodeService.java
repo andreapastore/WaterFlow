@@ -30,7 +30,7 @@ public class QrCodeService
 	
 	@Autowired
 	private MemorizzatorePompaSocio memorizzatorePompaSocio;
-	
+	//probabilemnte bisognerà aggiungere una lista di qrcode scannerizzate, rischio sovrascrizione 
 	private QrCode qrCodeTrovato;
 	private int numero_pompa_occupata;
 	
@@ -168,7 +168,4 @@ public class QrCodeService
 		pompaStatusService.updateStatus("disattiva", pompa.getId());
 		System.out.println("la pompa " + pompa.getId() + " è stata disattivata dal QrCodeTimer");
 	}
-	
-	
-	
 }

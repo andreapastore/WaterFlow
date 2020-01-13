@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.pastore.entity.Socio;
+import com.pastore.service.LoginService;
 import com.pastore.service.SocioService;
 
 @RestController
@@ -22,6 +23,9 @@ public class RestLogin
 {
 	@Autowired
 	private SocioService socioService;
+	
+	@Autowired
+	private LoginService loginService;
 	
 	@GetMapping(value = "/login", produces = "application/json")
 	public ResponseEntity<Socio> socioLogin(@RequestBody Socio socio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -69,15 +73,12 @@ public class RestLogin
 	@GetMapping(value = "/logout")
 	public ResponseEntity<HttpStatus> socioLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		HttpSession session = request.getSession();
-		Socio s = (Socio) session.getAttribute(session.getId().toString());
-		
 		try 
 		{
-			if(session != null)
+			if(request.getSession() != null)
 			{
-				System.out.println("logout del socio " + s.getUsername() + " andato a buon fine");
-				session.invalidate();
+				loginService.logout(request.getSession());
+				request.getSession().invalidate();
 			}
 			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 		} 
