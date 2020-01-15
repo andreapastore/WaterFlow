@@ -22,5 +22,8 @@ public interface PompaStatusRepository extends CrudRepository<PompaStatus, Integ
 
 	@Query(value = "SELECT * FROM pompastatus WHERE id = ?1", nativeQuery = true)
 	public PompaStatus getPompaStatusById(@Param("id") int id);
+
+	@Query(value = "INSERT INTO pompastatus (id, status) VALUES (?1 ,?2)", nativeQuery = true)
+	public void insertPompaStatus(@Param("id") int id, @Param("status") String status);
 	
 }

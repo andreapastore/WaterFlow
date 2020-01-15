@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,6 +40,36 @@ public class RestPompaStatus
 		{
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PutMapping(value = "/insertPompaStatus", produces = "application/json")
+	public ResponseEntity<HttpStatus> insertPompaStatus(@RequestBody PompaStatus p)
+	{
+		try 
+		{
+			pompaStatusService.insertPompaStatus(p.getId(), p.getStatus());
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping(value = "/updatePompaStatus", produces = "application/json")
+	public ResponseEntity<HttpStatus> updatePompaStatus(@RequestBody PompaStatus p)
+	{
+		try 
+		{
+			pompaStatusService.updateStatus(p.getStatus(), p.getId());
+			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

@@ -20,9 +20,9 @@ import com.pastore.service.LedService;
 @RequestMapping(value = "/api/flussoAcqua")
 public class RestFlussoAcqua {
 	
-	@SuppressWarnings("unused")
-	@Autowired
-	private LedService ledService;
+	//@SuppressWarnings("unused")
+	//@Autowired
+	//private LedService ledService;
 	
 	@Autowired
 	private FlussoAcquaService flussoAcquaService;

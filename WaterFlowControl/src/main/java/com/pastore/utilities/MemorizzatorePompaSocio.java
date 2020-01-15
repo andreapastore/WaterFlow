@@ -18,6 +18,10 @@ public class MemorizzatorePompaSocio
 	
 	public void insertPompa(String username, PompaStatus p)
 	{
+		if(hashSocioPompa == null)
+		{
+			hashSocioPompa = new HashMap<>();
+		}
 		hashSocioPompa.put(username, p);
 	}
 	

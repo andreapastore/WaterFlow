@@ -26,4 +26,9 @@ public class PompaStatusService {
 	{
 		return pompaStatusRepository.getPompaStatusById(id);
 	}
+
+	public void insertPompaStatus(int id, String status) 
+	{
+		pompaStatusRepository.insertPompaStatus(id, status);
+	}
 }

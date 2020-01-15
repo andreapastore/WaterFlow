@@ -31,4 +31,8 @@ public class DettaglioSocioService
 		return dettaglioSocioRepository.getMinutiTotali(id);
 	}
 
+	public Iterable<DettaglioSocio> ricercaTutto()
+	{
+		return dettaglioSocioRepository.findAll();
+	}
 }

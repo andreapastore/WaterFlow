@@ -26,4 +26,6 @@ public interface DettaglioSocioRepository extends CrudRepository<DettaglioSocio,
 	@Query(value = "UPDATE dettagliosocio SET username = ?1, apertura = ?2, chiusura = ?3, data_attivazione_slot = ?4, minuti = ?5, minuti_totali =?6, quantita_acqua = ?7, username = ?8 WHERE id = ?1", nativeQuery = true)
 	public void updateDettaglioSocio(@Param ("id") String username, @Param("apertura") String apertura, @Param("chiusura") String chiusura, @Param("data_attivazione_slot") String data_attivazione_slot, @Param("minuti") int minuti, @Param("minuti_totali") int minuti_totali, @Param("quantita_acqua") int quantita_acqua, @Param("username") String socio_username);
 	
+	@Query(value = "SELECT * FROM dettagliosocio", nativeQuery = true)
+	public Iterable<DettaglioSocio> findAll();
 }

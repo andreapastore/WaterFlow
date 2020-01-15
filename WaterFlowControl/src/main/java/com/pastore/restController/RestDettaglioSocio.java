@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pastore.entity.DettaglioSocio;
+import com.pastore.entity.Socio;
 import com.pastore.service.DettaglioSocioService;
 
 @RestController
@@ -53,6 +54,21 @@ public class RestDettaglioSocio {
 		{
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping(value = "/ricercatutto", produces = "application/json")
+	public ResponseEntity<Iterable<DettaglioSocio>> ricercaTutto()//ok
+	{
+		try 
+		{
+			Iterable<DettaglioSocio> dettaglioSoci = dettaglioSocioService.ricercaTutto();
+			return new ResponseEntity<Iterable<DettaglioSocio>>(dettaglioSoci, HttpStatus.OK);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return new ResponseEntity<Iterable<DettaglioSocio>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

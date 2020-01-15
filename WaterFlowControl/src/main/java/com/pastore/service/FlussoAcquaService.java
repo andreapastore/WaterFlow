@@ -30,6 +30,9 @@ public class FlussoAcquaService
 	@Autowired
 	private MemorizzatoreDettaglioSocioBuilder memorizzatoreDettaglioSocioBuilder;
 
+	//@Autowired
+	//private LedService ledService;
+	
 	private List<FlussoAcquaTimer> flussoAcquaTimers;
 	
 	public void apri(HttpSession session) 
@@ -96,6 +99,7 @@ public class FlussoAcquaService
 
 	public void chiudiDaTimer(PompaStatus p, DettaglioSocioBuilder d) 
 	{
+		//ledService.lightOff();
 		DettaglioSocio dettaglioSocio = memorizzatoreDettaglioSocioBuilder.getDettaglioSocioBuilder(d.getUser()).getDettaglioSocioAggiornato();
 		DettaglioSocio dett = dettaglioSocioService.getDettaglioSocioById(d.getUser());
 		if (dett != null)
