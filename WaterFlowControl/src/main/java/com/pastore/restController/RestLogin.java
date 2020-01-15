@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import com.pastore.entity.Socio;
 import com.pastore.service.LoginService;
 import com.pastore.service.SocioService;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping(value = "/api")
 public class RestLogin 
@@ -45,6 +47,7 @@ public class RestLogin
 						oldSession.invalidate();
 					}
 					HttpSession currentSession = request.getSession();
+					System.out.println("SONO LOGIN " + request.getSession().getId().toString());
 					currentSession.setAttribute(currentSession.getId().toString(), s.get());//associo alla sessione il nome dell'utente come chiave e l'oggetto socio come valore
 					currentSession.setMaxInactiveInterval(30*60);
 					return new ResponseEntity<>(s.get(), HttpStatus.OK);

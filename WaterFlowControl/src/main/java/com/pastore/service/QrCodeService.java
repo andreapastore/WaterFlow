@@ -117,8 +117,15 @@ public class QrCodeService
 	public void attivaPompa(HttpSession session)
 	{		
 		pompaStatusService.updateStatus("attiva", numero_pompa_occupata);
+		System.out.println("SONO ID SESSION IN ATTIVA POMPA " + session.getId().toString());
 		PompaStatus p = pompaStatusService.getPompaStatusById(numero_pompa_occupata);
+		if(p == null)
+			System.out.println("LA POMPA è NULL");
 		Socio s = (Socio) session.getAttribute(session.getId().toString());
+		if(s == null)
+		{
+			System.out.println("IL SOCIO è NULL");
+		}
 		memorizzatorePompaSocio.insertPompa(s.getUsername(), p);
 		System.out.println("il socio " + s.getUsername() + "ha attivato la pompa tramite la lettura del qrcode " + p.getId());
 		startTimer(p);
