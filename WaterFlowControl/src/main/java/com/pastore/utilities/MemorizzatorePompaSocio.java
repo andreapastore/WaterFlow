@@ -30,4 +30,9 @@ public class MemorizzatorePompaSocio
 	{
 		hashSocioPompa.remove(username);
 	}
+	
+	public boolean esisteSocio(String username)
+	{
+		return hashSocioPompa.containsKey(username);
+	}
 }

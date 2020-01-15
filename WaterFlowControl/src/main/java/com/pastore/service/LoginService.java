@@ -14,7 +14,16 @@ public class LoginService
 	public void logout(HttpSession session)
 	{
 		Socio s = (Socio) session.getAttribute(session.getId().toString());
-		memorizzatorePompaSocio.deletePompa(s.getUsername());
-		System.out.println("logout del socio " + s.getUsername() + " andato a buon fine");
+		
+		if(memorizzatorePompaSocio.esisteSocio(s.getUsername()))
+		{	
+			memorizzatorePompaSocio.deletePompa(s.getUsername());
+			System.out.println("logout del socio " + s.getUsername() + " andato a buon fine");
+		}
+		else
+		{
+			System.out.println("logout del socio " + s.getUsername() + " andato a buon fine e non ha usato nessuna pompa");
+		}
+		
 	}
 }
