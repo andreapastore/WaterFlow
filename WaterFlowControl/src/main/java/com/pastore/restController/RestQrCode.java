@@ -31,6 +31,31 @@ public class RestQrCode
 	@Autowired
 	private QrCodeService qrCodeService;
 	
+	@GetMapping(value = "/ricercapompa/{codice}")
+	public boolean attivaPompaDaQrCode(@PathVariable("codice") String codice, HttpServletRequest request, HttpServletResponse response)
+	{
+		try 
+		{
+			if(qrCodeService.confrontaQrCodeAvendoCodice(codice))
+			{
+				qrCodeService.trovaPompaCorrispondenteConCodice(codice);
+				if(qrCodeService.controllaDisponibilitaPompa())
+				{
+					HttpSession currentSession = request.getSession();
+					qrCodeService.attivaPompa(currentSession);
+					return true;
+				}
+			}
+			return false;
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return false;			
+		}
+		
+	}
+	
 	@GetMapping(value = "/codice/{numero}", produces = "application/json")
 	public String getCodicePompa(@PathVariable("numero") String numero) //ok
 	{
@@ -87,8 +112,6 @@ public class RestQrCode
 				{
 					HttpSession currentSession = request.getSession();
 					qrCodeService.attivaPompa(currentSession);
-					//Socio s = (Socio) currentSession.getAttribute(currentSession.getId().toString());
-					//qrCodeService.abilitaSocio(s);
 					return new ResponseEntity<HttpStatus>(HttpStatus.OK);
 				}
 				else

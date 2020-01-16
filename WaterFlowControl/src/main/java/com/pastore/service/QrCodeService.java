@@ -59,10 +59,27 @@ public class QrCodeService
 		qrCodeRepository.save(qrCode.getId(), qrCode.getCodice_pompa_uno(), qrCode.getCodice_pompa_due(), qrCode.getCodice_pompa_tre());
 	}
 
+	public boolean confrontaQrCodeAvendoCodice(String codice)
+	{
+		Iterable<QrCode> qrCodes = qrCodeRepository.findAll();
+		List<QrCode> myList = Lists.newArrayList(qrCodes);
+		
+		for (int i = 0; i < myList.size(); i++)
+		{
+			if(myList.get(i).getCodice_pompa_uno().equals(codice)|| myList.get(i).getCodice_pompa_due().equals(codice) || myList.get(i).getCodice_pompa_tre().equals(codice))
+			{
+				qrCodeTrovato = myList.get(i);
+				return true;
+			}
+			
+		}
+		
+		return false;
+	}
+	
 	public boolean confrontaQrCode(QrCode qrCode) 
 	{
 		Iterable<QrCode> qrCodes = qrCodeRepository.findAll();
-		
 		List<QrCode> myList = Lists.newArrayList(qrCodes);
 		
 		for (int i = 0; i < myList.size(); i++)
@@ -174,5 +191,33 @@ public class QrCodeService
 	{
 		pompaStatusService.updateStatus("disattiva", pompa.getId());
 		System.out.println("la pompa " + pompa.getId() + " è stata disattivata dal QrCodeTimer");
+	}
+
+	public void trovaPompaCorrispondenteConCodice(String codice) 
+	{
+		if(qrCodeTrovato.getCodice_pompa_uno().equals(codice))
+		{
+			System.out.println("se non è occpuata attivo la pompa 1");
+			numero_pompa_occupata = 1;
+		}
+		else if(qrCodeTrovato.getCodice_pompa_due().equals(codice))
+		{
+			System.out.println("se non è occpuata attivo la pompa 2");
+			numero_pompa_occupata = 2;
+		}
+		else if(qrCodeTrovato.getCodice_pompa_tre().equals(codice))
+		{
+			System.out.println("se non è occpuata attivo la pompa 3");
+			numero_pompa_occupata = 3;
+		}
+	}
+
+	public boolean controllaDisponibilitaPompa() 
+	{
+		if(pompaStatusService.getPompaStatusId(numero_pompa_occupata).equals("disattiva"))
+		{
+			return true;
+		}
+		return false;
 	}
 }
