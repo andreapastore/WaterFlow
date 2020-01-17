@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.pastore.entity.Socio;
+import com.pastore.service.ListaUtentiLoggati;
 import com.pastore.service.LoginService;
 import com.pastore.service.SocioService;
 
@@ -30,40 +31,44 @@ public class RestLogin
 	@Autowired
 	private LoginService loginService;
 	
+	@Autowired
+	private ListaUtentiLoggati listaUtentiLoggati;
+	
 	@PostMapping(value = "/login", produces = "application/json")
-	public ResponseEntity<Socio> socioLogin(@RequestBody Socio socio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public boolean socioLogin(@RequestBody Socio socio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		try 
 		{
 			Optional<Socio> s = socioService.ricercaSocioByUsername(socio.getUsername());
-			if (!s.isEmpty())
+			if (s.empty() != null)
 			{
 				if (socio.getPassword().equals(s.get().getPassword()))
 				{
 					System.out.println("ho trovato il socio");
 					HttpSession oldSession = request.getSession(false);
+					listaUtentiLoggati.inserisciSocioAppenaLoggato(s.get());
 					if(oldSession != null)
 					{
 						oldSession.invalidate();
 					}
 					HttpSession currentSession = request.getSession();
 					System.out.println("SONO LOGIN " + request.getSession().getId().toString());
-					
 					currentSession.setAttribute(currentSession.getId().toString(), s.get());//associo alla sessione il nome dell'utente come chiave e l'oggetto socio come valore
 					currentSession.setMaxInactiveInterval(30*60);
-					return new ResponseEntity<>(s.get(), HttpStatus.OK);
+					
+					return true;
 				}
 				else
 				{
 					System.out.println("password errata");
-					return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+					return false;
 				}
 				
 			}
 			else
 			{
 				System.out.println("non ho trovato il socio");
-				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+				return false;
 			}
 			
 			
@@ -71,26 +76,38 @@ public class RestLogin
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return false;
 		}
 	}
 
 	@GetMapping(value = "/logout")
 	public ResponseEntity<HttpStatus> socioLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		try 
+		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
+	
+		if(listaUtentiLoggati.controllaPresenzaSocio(s))
 		{
-			if(request.getSession() != null)
+			listaUtentiLoggati.eliminaSocioLoggato(s);
+			try 
 			{
-				loginService.logout(request.getSession());
-				request.getSession().invalidate();
+				if(request.getSession() != null)
+				{
+					System.out.println("SONO logout " + request.getSession().getId().toString());
+				
+					loginService.logout(request.getSession());
+					request.getSession().invalidate();
+				}
+				return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-		} 
-		catch (Exception e) 
+		}
+		else
 		{
-			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<HttpStatus>(HttpStatus.LOCKED);
 		}
 	}
 }

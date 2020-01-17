@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pastore.entity.QrCode;
+import com.pastore.entity.Socio;
+import com.pastore.service.ListaUtentiLoggati;
 import com.pastore.service.QrCodeService;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -31,27 +33,44 @@ public class RestQrCode
 	@Autowired
 	private QrCodeService qrCodeService;
 	
+	@Autowired
+	private ListaUtentiLoggati listaUtentiLoggati;
+	
 	@GetMapping(value = "/ricercapompa/{codice}")
 	public boolean attivaPompaDaQrCode(@PathVariable("codice") String codice, HttpServletRequest request, HttpServletResponse response)
 	{
-		try 
+		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
+		
+		if(listaUtentiLoggati.controllaPresenzaSocio(s))
 		{
-			if(qrCodeService.confrontaQrCodeAvendoCodice(codice))
+			try 
 			{
-				qrCodeService.trovaPompaCorrispondenteConCodice(codice);
-				if(qrCodeService.controllaDisponibilitaPompa())
+				if(qrCodeService.confrontaQrCodeAvendoCodice(codice))
 				{
-					HttpSession currentSession = request.getSession();
-					qrCodeService.attivaPompa(currentSession);
-					return true;
+					qrCodeService.trovaPompaCorrispondenteConCodice(codice);
+					if(qrCodeService.controllaDisponibilitaPompa())
+					{
+						HttpSession currentSession = request.getSession();
+						qrCodeService.attivaPompa(currentSession);
+						return true;
+					}
+					else
+					{
+						System.err.println("POMPA NON DISPONIBILE");
+						return false;
+					}
 				}
+				return false;
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				return false;			
 			}
-			return false;
-		} 
-		catch (Exception e) 
+		}
+		else
 		{
-			e.printStackTrace();
-			return false;			
+			return false;
 		}
 		
 	}
@@ -102,35 +121,44 @@ public class RestQrCode
 	@PostMapping(value = "/ricercaQrCode", produces = "application/json")
 	public ResponseEntity<HttpStatus> confrontaQrCode(@RequestBody QrCode qrCode, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		try
+		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
+		
+		if(listaUtentiLoggati.controllaPresenzaSocio(s))
 		{
-			if (qrCodeService.confrontaQrCode(qrCode))
+			try
 			{
-				System.out.println("ho trovato il qrCode corrispondente");
-				//una volta trovato il qrcode devo fare il check se la pompa è libera o meno
-				if(qrCodeService.controllaDisponibilitaPompaCorrispondente(qrCode))
+				if (qrCodeService.confrontaQrCode(qrCode))
 				{
-					HttpSession currentSession = request.getSession();
-					qrCodeService.attivaPompa(currentSession);
-					return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+					System.out.println("ho trovato il qrCode corrispondente");
+					//una volta trovato il qrcode devo fare il check se la pompa è libera o meno
+					if(qrCodeService.controllaDisponibilitaPompaCorrispondente(qrCode))
+					{
+						HttpSession currentSession = request.getSession();
+						qrCodeService.attivaPompa(currentSession);
+						return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+					}
+					else
+					{
+						System.out.println("la pompa è già stata attivata da qualche altro utente");
+						return new ResponseEntity<HttpStatus>(HttpStatus.SERVICE_UNAVAILABLE);
+					}
+					
 				}
 				else
 				{
-					System.out.println("la pompa è già stata attivata da qualche altro utente");
-					return new ResponseEntity<HttpStatus>(HttpStatus.SERVICE_UNAVAILABLE);
+					System.out.println("non ho trovato il qrcode corrispondente");
+					return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
 				}
-				
 			}
-			else
+			catch (Exception e) 
 			{
-				System.out.println("non ho trovato il qrcode corrispondente");
-				return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
+				e.printStackTrace();
+				return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
-		catch (Exception e) 
+		else
 		{
-			e.printStackTrace();
-			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<HttpStatus>(HttpStatus.LOCKED);
 		}
 	}
 

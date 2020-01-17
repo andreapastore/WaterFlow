@@ -63,7 +63,7 @@ public class FlussoAcquaService
 
 	private void disattivaTimerQrCode()
 	{
-		qrCodeService.stopTimer(true);
+		qrCodeService.getCodeTimer().setPompa_in_uso(true);
 	}
 	
 	private void attivaTimerFlussoAcqua(HttpSession session, DettaglioSocioBuilder dettaglioSocioBuilder)
@@ -99,7 +99,7 @@ public class FlussoAcquaService
 
 	public void chiudiDaTimer(PompaStatus p, DettaglioSocioBuilder d) 
 	{
-		//ledService.lightOff();
+	//	ledService.lightOff();
 		DettaglioSocio dettaglioSocio = memorizzatoreDettaglioSocioBuilder.getDettaglioSocioBuilder(d.getUser()).getDettaglioSocioAggiornato();
 		DettaglioSocio dett = dettaglioSocioService.getDettaglioSocioById(d.getUser());
 		if (dett != null)

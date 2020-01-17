@@ -24,7 +24,7 @@ public class ScansioneQrCodeTimer extends Thread
 			Thread.sleep(60000);
 			if(pompa_in_uso)
 			{
-				System.out.println("l'acqua è stata aperta, la pompa è in uso");
+				System.out.println("l'acqua è stata aperta, la pompa è in uso, timer scansione qrcode disattivato");
 			}
 			else
 			{

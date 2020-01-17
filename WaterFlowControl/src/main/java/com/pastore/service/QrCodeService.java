@@ -220,4 +220,9 @@ public class QrCodeService
 		}
 		return false;
 	}
+
+	public ScansioneQrCodeTimer getCodeTimer()
+	{
+		return this.codeTimer;
+	}
 }
