@@ -45,7 +45,7 @@ public class RestLogin
 				if (socio.getPassword().equals(s.get().getPassword()))
 				{
 					System.out.println("ho trovato il socio");
-					HttpSession oldSession = request.getSession(false);
+					HttpSession oldSession = request.getSession();
 					listaUtentiLoggati.inserisciSocioAppenaLoggato(s.get());
 					if(oldSession != null)
 					{

@@ -39,7 +39,7 @@ public class RestQrCode
 	@GetMapping(value = "/ricercapompa/{codice}")
 	public boolean attivaPompaDaQrCode(@PathVariable("codice") String codice, HttpServletRequest request, HttpServletResponse response)
 	{
-		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
 		
 		if(listaUtentiLoggati.controllaPresenzaSocio(s))
 		{
@@ -121,7 +121,7 @@ public class RestQrCode
 	@PostMapping(value = "/ricercaQrCode", produces = "application/json")
 	public ResponseEntity<HttpStatus> confrontaQrCode(@RequestBody QrCode qrCode, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
 		
 		if(listaUtentiLoggati.controllaPresenzaSocio(s))
 		{
