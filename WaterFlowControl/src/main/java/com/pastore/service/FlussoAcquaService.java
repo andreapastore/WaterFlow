@@ -30,8 +30,8 @@ public class FlussoAcquaService
 	@Autowired
 	private MemorizzatoreDettaglioSocioBuilder memorizzatoreDettaglioSocioBuilder;
 
-	//@Autowired
-	//private LedService ledService;
+	@Autowired
+	private LedService ledService;
 	
 	private List<FlussoAcquaTimer> flussoAcquaTimers;
 	

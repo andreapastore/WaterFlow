@@ -11,6 +11,9 @@ public class LoginService
 	@Autowired
 	private MemorizzatorePompaSocio memorizzatorePompaSocio;
 	
+	@Autowired
+	private ListaSessioniLoggate listaSessioniLoggate;
+	
 	public void logout(HttpSession session)
 	{
 		Socio s = (Socio) session.getAttribute(session.getId().toString());
@@ -25,5 +28,20 @@ public class LoginService
 			System.out.println("logout del socio " + s.getUsername() + " andato a buon fine e non ha usato nessuna pompa");
 		}
 		
+	}
+
+	public boolean controllaSocioLoggato(HttpSession session) 
+	{
+		return listaSessioniLoggate.controllaPresenzaSessione(session.getId().toString());
+	}
+	
+	public void inserisciNuovaSessione(HttpSession session)
+	{
+		listaSessioniLoggate.inserisciNuovaSessione(session.getId().toString());
+	}
+	
+	public void eliminaSessione(HttpSession session)
+	{
+		listaSessioniLoggate.eliminaSessione(session.getId().toString());
 	}
 }

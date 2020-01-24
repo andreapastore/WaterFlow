@@ -1,8 +1,10 @@
 package com.pastore.restController;
 
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,8 +13,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.pastore.entity.PompaStatus;
+import com.pastore.entity.RispostaLoggedIn;
+import com.pastore.entity.Socio;
 import com.pastore.service.PompaStatusService;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -24,54 +27,78 @@ public class RestPompaStatus
 	private PompaStatusService pompaStatusService;
 	
 	@GetMapping(value = "/getPompaStatus/{id}", produces = "application/json")
-	public ResponseEntity<PompaStatus> getPompaStatusById(@PathVariable ("id") int id) //ok
+	public PompaStatus getPompaStatusById(@PathVariable ("id") int id, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		try 
+		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
+		if (s != null)
 		{
-			PompaStatus p = pompaStatusService.getPompaStatusById(id);
-			if(p != null)
+			try 
 			{
-				return new ResponseEntity<PompaStatus>(p, HttpStatus.OK);
-			}
-			else
+				PompaStatus p = pompaStatusService.getPompaStatusById(id);
+				if(p != null)
+				{
+					return p;
+				}
+				else
+				{
+					return null;
+				}
+			} 
+			catch (Exception e) 
 			{
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+				e.printStackTrace();
+				return null;
 			}
-		} 
-		catch (Exception e) 
+		}
+		else
 		{
-			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return null;
 		}
 	}
 	
 	@PutMapping(value = "/insertPompaStatus", produces = "application/json")
-	public ResponseEntity<HttpStatus> insertPompaStatus(@RequestBody PompaStatus p)
+	public RispostaLoggedIn insertPompaStatus(@RequestBody PompaStatus p, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		try 
+		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
+		if (s != null)
+		{	
+			try 
+			{
+				pompaStatusService.insertPompaStatus(p.getId(), p.getStatus());
+				return new RispostaLoggedIn("true");
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				return new RispostaLoggedIn("false");
+			}
+		}
+		else
 		{
-			pompaStatusService.insertPompaStatus(p.getId(), p.getStatus());
-			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new RispostaLoggedIn("false");
 		}
 	}
 	
 	@PostMapping(value = "/updatePompaStatus", produces = "application/json")
-	public ResponseEntity<HttpStatus> updatePompaStatus(@RequestBody PompaStatus p)
+	public RispostaLoggedIn updatePompaStatus(@RequestBody PompaStatus p, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		try 
+		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
+		if (s != null)
 		{
-			pompaStatusService.updateStatus(p.getStatus(), p.getId());
-			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-		} 
-		catch (Exception e) 
+			try 
+			{
+				pompaStatusService.updateStatus(p.getStatus(), p.getId());
+				return new RispostaLoggedIn("true");
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				return new RispostaLoggedIn("false");
+			}
+		}
+		else
 		{
-			e.printStackTrace();
-			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new RispostaLoggedIn("false");
 		}
 	}
 }

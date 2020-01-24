@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pastore.entity.RispostaLoggedIn;
 import com.pastore.entity.Socio;
 import com.pastore.service.FlussoAcquaService;
 import com.pastore.service.LedService;
@@ -23,9 +24,9 @@ import com.pastore.service.ListaUtentiLoggati;
 @RequestMapping(value = "/api/flussoAcqua")
 public class RestFlussoAcqua {
 	
-	//@SuppressWarnings("unused")
-	//@Autowired
-	//private LedService ledService;
+	@SuppressWarnings("unused")
+	@Autowired
+	private LedService ledService;
 	
 	@Autowired
 	private ListaUtentiLoggati listaUtentiLoggati;
@@ -34,7 +35,7 @@ public class RestFlussoAcqua {
 	private FlussoAcquaService flussoAcquaService;
 	
 	@GetMapping(value = "/apri", produces = "application/json")
-	public ResponseEntity<HttpStatus> apri(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public RispostaLoggedIn apri(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
 		
@@ -45,24 +46,24 @@ public class RestFlussoAcqua {
 				System.out.println("Sono id session nella flussoAcqua " + request.getSession().getId().toString());
 				
 				flussoAcquaService.apri(request.getSession());
-				//ledService.lightOn();
+			//	ledService.lightOn();
 				System.out.println("il socio " + s.getUsername() + " è entrato nella apri");
-				return new ResponseEntity<>(HttpStatus.OK);
+				return new RispostaLoggedIn("true");
 			}
 			catch (Exception e) 
 			{
 				e.printStackTrace();
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				return new RispostaLoggedIn("false");
 			}
 		}
 		else
 		{
-			return new ResponseEntity<HttpStatus>(HttpStatus.LOCKED);
+			return new RispostaLoggedIn("false");
 		}
 	}
 	
 	@GetMapping(value = "/chiudi", produces = "application/json")
-	public ResponseEntity<HttpStatus> chiudi(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public RispostaLoggedIn chiudi(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
 		
@@ -73,18 +74,18 @@ public class RestFlussoAcqua {
 				System.out.println("sono id session nella flussoacqua chiudi " + request.getSession().getId().toString());
 				
 				flussoAcquaService.chiudi(request.getSession());
-				//ledService.lightOff();
+			//	ledService.lightOff();
 				System.out.println("il socio " + s.getUsername() + " è entrato nella chiudi");
-				return new ResponseEntity<>(HttpStatus.OK);
+				return new RispostaLoggedIn("true");
 			}
 			catch (Exception e) {
 				System.out.println(e);
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				return new RispostaLoggedIn("false");
 			}
 		}
 		else
 		{
-			return new ResponseEntity<HttpStatus>(HttpStatus.LOCKED);
+			return new RispostaLoggedIn("false");
 		}
 	}
 

@@ -1,6 +1,11 @@
 package com.pastore.restController;
 
+import java.io.IOException;
 import java.util.Optional;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pastore.entity.RispostaLoggedIn;
 import com.pastore.entity.Socio;
 import com.pastore.service.SocioService;
 
@@ -27,115 +33,171 @@ public class RestSocio {
 	SocioService socioService;
 	
 	@PostMapping(value = "/insert", produces = "application/json")
-	public ResponseEntity<HttpStatus> insertSocio(@RequestBody Socio socio)//ok
+	public RispostaLoggedIn insertSocio(@RequestBody Socio socio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		try
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
 		{
-			socioService.insertSocio(socio.getUsername(), socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
-			return new ResponseEntity<>(HttpStatus.OK);
+			try
+			{
+				socioService.insertSocio(socio.getUsername(), socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
+				return new RispostaLoggedIn("true");
+			}
+			catch (Exception e) {
+				
+				e.printStackTrace();
+				return new RispostaLoggedIn("false");
+			}
 		}
-		catch (Exception e) {
-			
-			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+		{
+			return new RispostaLoggedIn("false");
 		}
 	}
 	
 	@GetMapping(value = "/ricercatutto", produces = "application/json")
-	public ResponseEntity<Iterable<Socio>> ricercaTutto()//ok
+	public ResponseEntity<Iterable<Socio>> ricercaTutto(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		try 
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
+		{	
+			try 
+			{
+				Iterable<Socio> soci = socioService.ricercaTutto();
+				return new ResponseEntity<Iterable<Socio>>(soci, HttpStatus.OK);
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				return new ResponseEntity<Iterable<Socio>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		else
 		{
-			Iterable<Socio> soci = socioService.ricercaTutto();
-			return new ResponseEntity<Iterable<Socio>>(soci, HttpStatus.OK);
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
 			return new ResponseEntity<Iterable<Socio>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	@GetMapping(value = "/ricerca/{username}", produces = "application/json")
-	public ResponseEntity<Socio> ricercaSocioByUsername(@PathVariable("username") String username)//ok
+	public ResponseEntity<Socio> ricercaSocioByUsername(@PathVariable("username") String username, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		try 
-		{
-			Optional<Socio> socio = socioService.ricercaSocioByUsername(username);
-			
-			if (!socio.isEmpty())
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
+		{	
+			try 
 			{
-				return new ResponseEntity<Socio>(socio.get(), HttpStatus.OK);
-			}
-			else
+				Optional<Socio> socio = socioService.ricercaSocioByUsername(username);
+				
+				if (!socio.isEmpty())
+				{
+					return new ResponseEntity<Socio>(socio.get(), HttpStatus.OK);
+				}
+				else
+				{
+					return new ResponseEntity<Socio>(HttpStatus.NO_CONTENT);
+				}
+			} 
+			catch (Exception e) 
 			{
-				return new ResponseEntity<Socio>(HttpStatus.NO_CONTENT);
+				e.printStackTrace();
+				return new ResponseEntity<Socio>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-		} catch (Exception e) 
+		}
+		else
 		{
-			e.printStackTrace();
 			return new ResponseEntity<Socio>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
 		
 	}
 
 	@DeleteMapping(value = "/cancella/{username}")
-	public ResponseEntity<HttpStatus> cancellaSocioByUsername(@PathVariable("username") String username) //ok
+	public ResponseEntity<HttpStatus> cancellaSocioByUsername(@PathVariable("username") String username, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		try
-		{
-			socioService.cancellaSocioByUsername(username);
-			return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
+		{	
+			try
+			{
+				socioService.cancellaSocioByUsername(username);
+				return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		else
+		{
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	//nel json i campi devono essere già aggiornati
 	@PutMapping(value = "/modifica/{username}", produces = "application/json")
-	public ResponseEntity<HttpStatus> updateSocio(@RequestBody Socio socio, @PathVariable("username") String username) //ok
+	public RispostaLoggedIn updateSocio(@RequestBody Socio socio, @PathVariable("username") String username, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		try 
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
 		{
-			socioService.updateSocio(username, socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
-			return new ResponseEntity<>(HttpStatus.OK);
-		} 
-		catch (Exception e) 
+			try 
+			{
+				socioService.updateSocio(username, socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
+				return new RispostaLoggedIn("true");
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				return new RispostaLoggedIn("false");
+			}
+		}
+		else
 		{
-			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new RispostaLoggedIn("false");
 		}
 	}
 	
 	@PostMapping(value = "/updatePass", produces = "application/json")
-	public ResponseEntity<HttpStatus> updatePassword(@RequestBody Socio socio) //ok
+	public RispostaLoggedIn updatePassword(@RequestBody Socio socio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		try 
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
 		{
-			socioService.updateSocio(socio.getUsername(), socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (Exception e) 
+			try 
+			{
+				socioService.updateSocio(socio.getUsername(), socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
+				return new RispostaLoggedIn("true");
+			} catch (Exception e) 
+			{
+				e.printStackTrace();
+				return new RispostaLoggedIn("false");
+			}
+		}
+		else
 		{
-			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new RispostaLoggedIn("false");
 		}
 	}
 	
 	@PostMapping(value = "/updatePass/{username}")
-	public ResponseEntity<HttpStatus> updatePasswordConUser(@RequestBody Socio socio, @PathVariable("username") String username) //ok
+	public RispostaLoggedIn updatePasswordConUser(@RequestBody Socio socio, @PathVariable("username") String username, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		try 
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
 		{
-			socioService.updateSocio(username, socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
-			return new ResponseEntity<>(HttpStatus.OK);
-		} 
-		catch (Exception e) 
+			try 
+			{
+				socioService.updateSocio(username, socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
+				return new RispostaLoggedIn("true");
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				return new RispostaLoggedIn("false");
+			}
+		}
+		else
 		{
-			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new RispostaLoggedIn("false");
 		}
 	}
 	

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.pastore.entity.RispostaLoggedIn;
 import com.pastore.entity.Socio;
 import com.pastore.service.ListaUtentiLoggati;
 import com.pastore.service.LoginService;
@@ -35,7 +37,7 @@ public class RestLogin
 	private ListaUtentiLoggati listaUtentiLoggati;
 	
 	@PostMapping(value = "/login", produces = "application/json")
-	public boolean socioLogin(@RequestBody Socio socio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public RispostaLoggedIn socioLogin(@RequestBody Socio socio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		try 
 		{
@@ -53,22 +55,22 @@ public class RestLogin
 					}
 					HttpSession currentSession = request.getSession();
 					System.out.println("SONO LOGIN " + request.getSession().getId().toString());
+					loginService.inserisciNuovaSessione(currentSession);
 					currentSession.setAttribute(currentSession.getId().toString(), s.get());//associo alla sessione il nome dell'utente come chiave e l'oggetto socio come valore
 					currentSession.setMaxInactiveInterval(30*60);
-					
-					return true;
+					return new RispostaLoggedIn("true");//return true;
 				}
 				else
 				{
 					System.out.println("password errata");
-					return false;
+					return new RispostaLoggedIn("false");
 				}
 				
 			}
 			else
 			{
 				System.out.println("non ho trovato il socio");
-				return false;
+				return new RispostaLoggedIn("false");
 			}
 			
 			
@@ -76,38 +78,59 @@ public class RestLogin
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			return false;
+			return new RispostaLoggedIn("false");
 		}
 	}
 
+	@GetMapping(value = "/login/loggedIn", produces = "application/json")
+	public RispostaLoggedIn controlloSocioLoggato(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+		HttpSession session = request.getSession();
+		
+		Socio s = (Socio) session.getAttribute(session.getId().toString());
+		if(s != null)
+		{
+			return new RispostaLoggedIn("true");
+		}
+		return new RispostaLoggedIn("false");
+	
+	}
+	
 	@GetMapping(value = "/logout")
-	public ResponseEntity<HttpStatus> socioLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	public RispostaLoggedIn socioLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
-	
-		if(listaUtentiLoggati.controllaPresenzaSocio(s))
-		{
-			listaUtentiLoggati.eliminaSocioLoggato(s);
-			try 
+		if (s != null)
+		{	
+			if(listaUtentiLoggati.controllaPresenzaSocio(s))
 			{
-				if(request.getSession() != null)
+				listaUtentiLoggati.eliminaSocioLoggato(s);
+				loginService.eliminaSessione(request.getSession());
+				try 
 				{
-					System.out.println("SONO logout " + request.getSession().getId().toString());
-				
-					loginService.logout(request.getSession());
-					request.getSession().invalidate();
+					if(request.getSession() != null)
+					{
+						System.out.println("SONO logout " + request.getSession().getId().toString());
+					
+						loginService.logout(request.getSession());
+						request.getSession().invalidate();
+					}
+					return new RispostaLoggedIn("true");
+				} 
+				catch (Exception e) 
+				{
+					e.printStackTrace();
+					return new RispostaLoggedIn("false");
 				}
-				return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-			} 
-			catch (Exception e) 
+			}
+			else
 			{
-				e.printStackTrace();
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				return new RispostaLoggedIn("false");
 			}
 		}
 		else
 		{
-			return new ResponseEntity<HttpStatus>(HttpStatus.LOCKED);
+			return new RispostaLoggedIn("false");
 		}
 	}
 }

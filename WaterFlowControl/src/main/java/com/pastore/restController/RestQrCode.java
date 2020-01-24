@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session.Cookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pastore.entity.QrCode;
+import com.pastore.entity.RispostaLoggedIn;
 import com.pastore.entity.Socio;
 import com.pastore.service.ListaUtentiLoggati;
 import com.pastore.service.QrCodeService;
@@ -37,149 +39,194 @@ public class RestQrCode
 	private ListaUtentiLoggati listaUtentiLoggati;
 	
 	@GetMapping(value = "/ricercapompa/{codice}")
-	public boolean attivaPompaDaQrCode(@PathVariable("codice") String codice, HttpServletRequest request, HttpServletResponse response)
-	{
-		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+	public ResponseEntity<RispostaLoggedIn> attivaPompaDaQrCode(@PathVariable("codice") String codice, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{	
 		
-		if(listaUtentiLoggati.controllaPresenzaSocio(s))
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
 		{
-			try 
+			if(listaUtentiLoggati.controllaPresenzaSocio(s))
 			{
-				if(qrCodeService.confrontaQrCodeAvendoCodice(codice))
+				try 
 				{
-					qrCodeService.trovaPompaCorrispondenteConCodice(codice);
-					if(qrCodeService.controllaDisponibilitaPompa())
+					if(qrCodeService.confrontaQrCodeAvendoCodice(codice))
 					{
-						HttpSession currentSession = request.getSession();
-						qrCodeService.attivaPompa(currentSession);
-						return true;
+						qrCodeService.trovaPompaCorrispondenteConCodice(codice);
+						if(qrCodeService.controllaDisponibilitaPompa())
+						{
+							HttpSession currentSession = request.getSession();
+							qrCodeService.attivaPompa(currentSession);
+							return new ResponseEntity<>(new RispostaLoggedIn("true"), HttpStatus.OK);
+						}
+						else
+						{
+							System.err.println("POMPA NON DISPONIBILE");
+							return new ResponseEntity<>(new RispostaLoggedIn("false"), HttpStatus.INTERNAL_SERVER_ERROR);
+						}
 					}
-					else
-					{
-						System.err.println("POMPA NON DISPONIBILE");
-						return false;
-					}
+					return new ResponseEntity<>(new RispostaLoggedIn("false"), HttpStatus.INTERNAL_SERVER_ERROR);
+					
+				} 
+				catch (Exception e) 
+				{
+					e.printStackTrace();
+					return new ResponseEntity<>(new RispostaLoggedIn("false"), HttpStatus.INTERNAL_SERVER_ERROR);			
 				}
-				return false;
-			} 
-			catch (Exception e) 
+			}
+			else
 			{
-				e.printStackTrace();
-				return false;			
+				return new ResponseEntity<>(new RispostaLoggedIn("false"), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
-		else
+		else 
 		{
-			return false;
+			return new ResponseEntity<>(new RispostaLoggedIn("false"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 	}
 	
 	@GetMapping(value = "/codice/{numero}", produces = "application/json")
-	public String getCodicePompa(@PathVariable("numero") String numero) //ok
+	public String getCodicePompa(@PathVariable("numero") String numero, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException //ok
 	{
-		try 
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
 		{
-			String result = null;
-			
-			switch (numero) {
-			case "1":
-				result = qrCodeService.getCodicePompaUno();
-				break;
-			case "2": 
-				result = qrCodeService.getCodicePompaDue();
-				break;
-			case "3": 
-				result = qrCodeService.getCodicePompaTre();
-				break;
-			default:
-				break;
-			}
-			
-			if (result == null)
+			try 
 			{
-				return "no content";
-			}
-			else
+				String result = null;
+				
+				switch (numero) {
+				case "1":
+					result = qrCodeService.getCodicePompaUno();
+					break;
+				case "2": 
+					result = qrCodeService.getCodicePompaDue();
+					break;
+				case "3": 
+					result = qrCodeService.getCodicePompaTre();
+					break;
+				default:
+					break;
+				}
+				
+				if (result == null)
+				{
+					return "no content";
+				}
+				else
+				{
+					return result;
+				}
+			} 
+			catch (Exception e) 
 			{
-				return result;
+				e.printStackTrace();
+				return "internal server error";
 			}
-		} 
-		catch (Exception e) 
+		}
+		else
 		{
-			e.printStackTrace();
 			return "internal server error";
 		}
 	}
 
 	@PostMapping(value = "/insert", produces = "application/json")
-	public void saveQrCode(@RequestBody QrCode qrCode) //ok
+	public RispostaLoggedIn saveQrCode(@RequestBody QrCode qrCode, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException //ok
 	{
-		qrCodeService.save(qrCode);
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
+		{
+			qrCodeService.save(qrCode);
+			return new RispostaLoggedIn("true");
+		}
+		return new RispostaLoggedIn("false");
 	}
 	
 	@PostMapping(value = "/ricercaQrCode", produces = "application/json")
-	public ResponseEntity<HttpStatus> confrontaQrCode(@RequestBody QrCode qrCode, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
+	public RispostaLoggedIn confrontaQrCode(@RequestBody QrCode qrCode, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
+		System.out.println("SONO RICERCA QRCODE " + request.getSession().getId().toString());
 		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
-		
-		if(listaUtentiLoggati.controllaPresenzaSocio(s))
+		if (s != null)
 		{
-			try
+			if(listaUtentiLoggati.controllaPresenzaSocio(s))
 			{
-				if (qrCodeService.confrontaQrCode(qrCode))
+				try
 				{
-					System.out.println("ho trovato il qrCode corrispondente");
-					//una volta trovato il qrcode devo fare il check se la pompa è libera o meno
-					if(qrCodeService.controllaDisponibilitaPompaCorrispondente(qrCode))
+					if (qrCodeService.confrontaQrCode(qrCode))
 					{
-						HttpSession currentSession = request.getSession();
-						qrCodeService.attivaPompa(currentSession);
-						return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+						System.out.println("ho trovato il qrCode corrispondente");
+						//una volta trovato il qrcode devo fare il check se la pompa è libera o meno
+						if(qrCodeService.controllaDisponibilitaPompaCorrispondente(qrCode))
+						{
+							HttpSession currentSession = request.getSession();
+							qrCodeService.attivaPompa(currentSession);
+							return new RispostaLoggedIn("true");
+						}
+						else
+						{
+							System.out.println("la pompa è già stata attivata da qualche altro utente");
+							return new RispostaLoggedIn("false");
+						}
+						
 					}
 					else
 					{
-						System.out.println("la pompa è già stata attivata da qualche altro utente");
-						return new ResponseEntity<HttpStatus>(HttpStatus.SERVICE_UNAVAILABLE);
+						System.out.println("non ho trovato il qrcode corrispondente");
+						return new RispostaLoggedIn("false");
 					}
-					
 				}
-				else
+				catch (Exception e) 
 				{
-					System.out.println("non ho trovato il qrcode corrispondente");
-					return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
+					e.printStackTrace();
+					return new RispostaLoggedIn("false");
 				}
 			}
-			catch (Exception e) 
+			else
 			{
-				e.printStackTrace();
-				return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+				return new RispostaLoggedIn("false");
 			}
 		}
 		else
 		{
-			return new ResponseEntity<HttpStatus>(HttpStatus.LOCKED);
+			return new RispostaLoggedIn("false");
 		}
 	}
 
-	@GetMapping(value = "/code/{id}")
-	public QrCode findById(@PathVariable("id") int id) //ok
+	@GetMapping(value = "/code/{id}", produces = "application/json")
+	public QrCode findById(@PathVariable("id") int id, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
-		return qrCodeService.findById(id);
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
+		{
+			return qrCodeService.findById(id);
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	@PutMapping(value = "/modifica/{id}", produces = "application/json")
-	public ResponseEntity<HttpStatus> updateQrCode(@RequestBody QrCode qrCode, @PathVariable("id") int id)
+	public RispostaLoggedIn updateQrCode(@RequestBody QrCode qrCode, @PathVariable("id") int id, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		try 
+		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
+		if (s != null)
+		{	
+			try 
+			{
+				qrCodeService.updateQrCode(qrCode, id);
+				return new RispostaLoggedIn("true");
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				return new RispostaLoggedIn("false");
+			}
+		}
+		else
 		{
-			qrCodeService.updateQrCode(qrCode, id);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new RispostaLoggedIn("false");
 		}
 	}
 }
