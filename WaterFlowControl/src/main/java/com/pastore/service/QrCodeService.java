@@ -33,6 +33,7 @@ public class QrCodeService
 	//probabilemnte bisognerà aggiungere una lista di qrcode scannerizzate, rischio sovrascrizione 
 	private QrCode qrCodeTrovato;
 	private int numero_pompa_occupata;
+	private int minuti_attesa_timer_qrcode = 1;
 	
 	public String codicePompa(int id) 
 	{
@@ -106,7 +107,7 @@ public class QrCodeService
 
 	public void startTimer(PompaStatus p)
 	{
-		codeTimer = new ScansioneQrCodeTimer(this, p);
+		codeTimer = new ScansioneQrCodeTimer(this, p, minuti_attesa_timer_qrcode);
 		codeTimer.start();
 	}
 	
@@ -225,4 +226,17 @@ public class QrCodeService
 	{
 		return this.codeTimer;
 	}
+
+	
+	public int getMinuti_attesa_timer_qrcode() 
+	{
+		return minuti_attesa_timer_qrcode;
+	}
+
+	public void setMinuti_attesa_timer_flusso_acqua(int minuti_attesa_timer_qrcode) 
+	{
+		this.minuti_attesa_timer_qrcode = minuti_attesa_timer_qrcode;
+	}
+
+	
 }

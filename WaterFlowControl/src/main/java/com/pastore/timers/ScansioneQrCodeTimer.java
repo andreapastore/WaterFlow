@@ -8,11 +8,14 @@ public class ScansioneQrCodeTimer extends Thread
 	private QrCodeService qrCodeService;
 	private PompaStatus pompa;
 	private boolean pompa_in_uso;
+	private int minuti;
 
-	public ScansioneQrCodeTimer(QrCodeService q, PompaStatus p) 
+	public ScansioneQrCodeTimer(QrCodeService q, PompaStatus p, int m) 
 	{
 		this.qrCodeService = q;
 		this.pompa = p;
+		m *= 60000;
+		this.minuti = m;
 	}
 	
 	@Override
@@ -21,7 +24,7 @@ public class ScansioneQrCodeTimer extends Thread
 		System.out.println("timer scansione qrcode partito");
 		try 
 		{
-			Thread.sleep(60000);
+			Thread.sleep(minuti);
 			if(pompa_in_uso)
 			{
 				System.out.println("l'acqua è stata aperta, la pompa è in uso, timer scansione qrcode disattivato");

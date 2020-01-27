@@ -10,12 +10,15 @@ public class FlussoAcquaTimer extends Thread
 	private boolean flusso_chiuso_da_utente;
 	private PompaStatus pompa;
 	private DettaglioSocioBuilder dettaglioSocioBuilder;
+	private int minuti;
 	
-	public FlussoAcquaTimer(FlussoAcquaService f, PompaStatus p, DettaglioSocioBuilder d)
+	public FlussoAcquaTimer(FlussoAcquaService f, PompaStatus p, DettaglioSocioBuilder d, int m)
 	{
 		this.acquaService = f;
 		this.pompa = p;
 		this.dettaglioSocioBuilder = d;
+		m *= 60000;
+		this.minuti = m;
 	}
 
 	public boolean isFlusso_chiuso_da_utente() 
@@ -40,7 +43,7 @@ public class FlussoAcquaTimer extends Thread
 		System.out.println("timer flusso acqua partito");
 		try 
 		{
-			Thread.sleep(180000);
+			Thread.sleep(minuti);
 			if(flusso_chiuso_da_utente)
 			{
 				System.out.println("l'utente ha chiuso il flusso d'acqua");
