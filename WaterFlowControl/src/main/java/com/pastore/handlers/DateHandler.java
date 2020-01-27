@@ -21,7 +21,7 @@ public class DateHandler
 	{
 		LocalDateTime data_chiusura = LocalDateTime.now();
 		Duration duration = Duration.between(data_apertura, data_chiusura);
-		return (int) duration.toMinutes() + 1; //arrotondamento per eccesso
+		return (int) duration.toMinutes();	
 	}
 	
 	public String getDataAggiornata()

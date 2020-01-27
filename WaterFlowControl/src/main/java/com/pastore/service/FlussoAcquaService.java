@@ -33,8 +33,11 @@ public class FlussoAcquaService
 	@Autowired
 	private LedService ledService;
 	
+	@Autowired
+	private AttesaTimerService attesaTimerService;
+	
 	private List<FlussoAcquaTimer> flussoAcquaTimers;
-	private int numero_minuti_di_attesa = 2;
+	private int numero_minuti_di_attesa = 0;
 	
 	public void apri(HttpSession session) 
 	{
@@ -76,8 +79,7 @@ public class FlussoAcquaService
 		Socio s = (Socio) session.getAttribute(session.getId().toString());
 		if (s != null)
 		{
-			
-			FlussoAcquaTimer acquaTimer = new FlussoAcquaTimer(this, memorizzatorePompaSocio.getPompa(s.getUsername()), dettaglioSocioBuilder, numero_minuti_di_attesa);
+			FlussoAcquaTimer acquaTimer = new FlussoAcquaTimer(this, memorizzatorePompaSocio.getPompa(s.getUsername()), dettaglioSocioBuilder, this.attesaTimerService.ritornaMinutiDiAttesaFlussoAcqua());
 			acquaTimer.start();
 			flussoAcquaTimers.add(acquaTimer);
 		}
@@ -136,7 +138,7 @@ public class FlussoAcquaService
 
 	public int getNumero_minuti_di_attesa() 
 	{
-		return numero_minuti_di_attesa;
+		return numero_minuti_di_attesa = this.attesaTimerService.ritornaMinutiDiAttesaFlussoAcqua();
 	}
 
 	public void setNumero_minuti_di_attesa(int numero_minuti_di_attesa) 

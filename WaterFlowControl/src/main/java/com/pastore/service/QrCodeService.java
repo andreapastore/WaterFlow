@@ -23,17 +23,21 @@ public class QrCodeService
 	@Autowired
 	private PompaStatusService pompaStatusService;
 
-	private ScansioneQrCodeTimer codeTimer;
-	
 	@Autowired
 	private SocioService socioService;
 	
 	@Autowired
 	private MemorizzatorePompaSocio memorizzatorePompaSocio;
+	
+	@Autowired 
+	private AttesaTimerService attesaTimerService;
+	
 	//probabilemnte bisognerà aggiungere una lista di qrcode scannerizzate, rischio sovrascrizione 
 	private QrCode qrCodeTrovato;
 	private int numero_pompa_occupata;
-	private int minuti_attesa_timer_qrcode = 1;
+	private int minuti_attesa_timer_qrcode = 0;
+	private ScansioneQrCodeTimer codeTimer;
+	
 	
 	public String codicePompa(int id) 
 	{
@@ -72,9 +76,7 @@ public class QrCodeService
 				qrCodeTrovato = myList.get(i);
 				return true;
 			}
-			
 		}
-		
 		return false;
 	}
 	
@@ -230,6 +232,10 @@ public class QrCodeService
 	
 	public int getMinuti_attesa_timer_qrcode() 
 	{
+		if(this.minuti_attesa_timer_qrcode == 0)
+		{
+			minuti_attesa_timer_qrcode = attesaTimerService.ritornaMinutiDiAttesaQrCode();
+		}
 		return minuti_attesa_timer_qrcode;
 	}
 
