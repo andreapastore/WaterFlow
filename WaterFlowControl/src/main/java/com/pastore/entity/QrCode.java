@@ -12,7 +12,7 @@ import javax.persistence.Table;
 public class QrCode implements Serializable
 {
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
 	@Column(name = "id")
 	private int id;
@@ -48,8 +48,8 @@ public class QrCode implements Serializable
 		return codice_pompa_due;
 	}
 
-	public void setCodice_pompa_due(String codie_pompa_due) {
-		this.codice_pompa_due = codie_pompa_due;
+	public void setCodice_pompa_due(String codice_pompa_due) {
+		this.codice_pompa_due = codice_pompa_due;
 	}
 
 	public String getCodice_pompa_tre() {
@@ -59,6 +59,5 @@ public class QrCode implements Serializable
 	public void setCodice_pompa_tre(String codice_pompa_tre) {
 		this.codice_pompa_tre = codice_pompa_tre;
 	}
-	
-	
+
 }
