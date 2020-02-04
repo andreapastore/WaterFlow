@@ -7,8 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,7 +56,11 @@ public class RestLogin
 					loginService.inserisciNuovaSessione(currentSession);
 					currentSession.setAttribute(currentSession.getId().toString(), s.get());//associo alla sessione il nome dell'utente come chiave e l'oggetto socio come valore
 					currentSession.setMaxInactiveInterval(30*60);
-					return new RispostaLoggedIn("true");//return true;
+					RispostaLoggedIn r = new RispostaLoggedIn("true");
+					r.setBarca(s.get().getPostazione());
+					r.setUsername(s.get().getUsername());
+					r.setProfilo(s.get().getProfilo());
+					return r;
 				}
 				else
 				{
@@ -90,7 +92,25 @@ public class RestLogin
 		Socio s = (Socio) session.getAttribute(session.getId().toString());
 		if(s != null)
 		{
-			return new RispostaLoggedIn("true");
+			CharSequence a = "a";
+			CharSequence b = "b";
+			RispostaLoggedIn r = new RispostaLoggedIn("true");
+			r.setBarca(s.getPostazione());
+			r.setUsername(s.getUsername());
+			if(s.getPostazione().contains(a))
+			{
+				r.setPosto(1);
+			}
+			else if (s.getPostazione().contains(b))
+			{
+				r.setPosto(2);
+			}
+			else
+			{
+				r.setPosto(3);
+			}
+			r.setProfilo(s.getProfilo());
+			return r;
 		}
 		return new RispostaLoggedIn("false");
 	

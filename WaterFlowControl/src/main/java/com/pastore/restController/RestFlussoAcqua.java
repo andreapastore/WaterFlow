@@ -20,7 +20,7 @@ import com.pastore.service.ListaUtentiLoggati;
 @RequestMapping(value = "/api/flussoAcqua")
 public class RestFlussoAcqua {
 	
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	@Autowired
 	private LedService ledService;
 	
@@ -42,7 +42,7 @@ public class RestFlussoAcqua {
 				System.out.println("Sono id session nella flussoAcqua " + request.getSession().getId().toString());
 				
 				flussoAcquaService.apri(request.getSession());
-			//	ledService.lightOn();
+				//ledService.lightOn();
 				System.out.println("il socio " + s.getUsername() + " è entrato nella apri");
 				return new RispostaLoggedIn("true");
 			}
@@ -70,7 +70,7 @@ public class RestFlussoAcqua {
 				System.out.println("sono id session nella flussoacqua chiudi " + request.getSession().getId().toString());
 				
 				flussoAcquaService.chiudi(request.getSession());
-			//	ledService.lightOff();
+				//ledService.lightOff();
 				System.out.println("il socio " + s.getUsername() + " è entrato nella chiudi");
 				return new RispostaLoggedIn("true");
 			}
