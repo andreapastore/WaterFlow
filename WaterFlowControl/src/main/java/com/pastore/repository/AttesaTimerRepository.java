@@ -16,4 +16,10 @@ public interface AttesaTimerRepository extends CrudRepository<AttesaTimer, Strin
 
 	@Query(value = "SELECT minuti FROM attesatimer WHERE nome_timer = 'flussoacqua'", nativeQuery = true)
 	public int ritornaMinutiDiAttesaFlussoAcqua();
+
+	@Query(value = "UPDATE attesatimer SET minuti = ?1 WHERE nome_timer = 'qrcode'", nativeQuery = true)
+	public Object setMinutiDiAttesaQrCode(@Param ("minuti") int minuti);
+
+	@Query(value = "UPDATE attesatimer SET minuti = ?1 WHERE nome_timer = 'flussoacqua'", nativeQuery = true)
+	public Object setMinutiDiAttesaFlussoAcqua(int minuti);
 }

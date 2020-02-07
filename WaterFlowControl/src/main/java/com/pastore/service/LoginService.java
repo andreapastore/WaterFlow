@@ -2,6 +2,8 @@ package com.pastore.service;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.pastore.entity.RispostaLoggedIn;
 import com.pastore.entity.Socio;
 import com.pastore.utilities.MemorizzatorePompaSocio;
 
@@ -13,6 +15,9 @@ public class LoginService
 	
 	@Autowired
 	private ListaSessioniLoggate listaSessioniLoggate;
+	
+	@Autowired
+	private AttesaTimerService attesaTimerService;
 	
 	public void logout(HttpSession session)
 	{
@@ -43,5 +48,11 @@ public class LoginService
 	public void eliminaSessione(HttpSession session)
 	{
 		listaSessioniLoggate.eliminaSessione(session.getId().toString());
+	}
+
+	public void inserisciTimerDiAttesa(RispostaLoggedIn r) 
+	{
+		r.setTimerflussoacqua(attesaTimerService.ritornaMinutiDiAttesaFlussoAcqua());
+		r.setTimerqrcode(attesaTimerService.ritornaMinutiDiAttesaQrCode());
 	}
 }

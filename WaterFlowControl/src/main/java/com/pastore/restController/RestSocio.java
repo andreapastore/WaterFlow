@@ -38,6 +38,12 @@ public class RestSocio {
 		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
 		if (s != null)
 		{
+			System.out.println("SONO IL SOCIO CHE MI STA ARRIVANDO: " + socio.getUsername() + " " +
+					socio.getAbilitato() + " " + 
+					socio.getBarca() + " " + 
+					socio.getPassword() + " " + 
+					socio.getProfilo() + " " + 
+					socio.getPostazione());
 			try
 			{
 				socioService.insertSocio(socio.getUsername(), socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());
@@ -139,6 +145,12 @@ public class RestSocio {
 		Socio s = (Socio) request.getSession(false).getAttribute(request.getSession().getId().toString());
 		if (s != null)
 		{
+			System.out.println("SONO IL SOCIO CHE MI STA ARRIVANDO: " + socio.getUsername() + " " +
+					socio.getAbilitato() + " " + 
+					socio.getBarca() + " " + 
+					socio.getPassword() + " " + 
+					socio.getProfilo() + " " + 
+					socio.getPostazione());
 			try 
 			{
 				socioService.updateSocio(username, socio.getAbilitato(), socio.getBarca(), socio.getPassword(), socio.getPostazione(), socio.getProfilo());

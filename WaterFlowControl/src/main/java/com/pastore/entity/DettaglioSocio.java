@@ -1,13 +1,8 @@
 package com.pastore.entity;
-
 import java.io.Serializable;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -38,9 +33,8 @@ public class DettaglioSocio implements Serializable
 	@Column(name = "quantita_acqua")
 	private int quantita_acqua;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "username", referencedColumnName = "username")
-	private Socio socio;
+	@Column(name = "username")
+	private String socio_username;
 	
 	public DettaglioSocio () {}
 
@@ -100,13 +94,15 @@ public class DettaglioSocio implements Serializable
 		this.quantita_acqua = quantita_acqua;
 	}
 
-	public Socio getSocio() {
-		return socio;
+	public String getSocio_username() {
+		return socio_username;
 	}
 
-	public void setSocio(Socio socio) {
-		this.socio = socio;
+	public void setSocio_username(String socio_username) {
+		this.socio_username = socio_username;
 	}
+
+	
 	
 	
 }

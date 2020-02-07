@@ -7,6 +7,8 @@ public class RispostaLoggedIn
 	private int posto;
 	private String barca;
 	private String profilo;
+	private int timerqrcode;
+	private int timerflussoacqua;
 	
 	public RispostaLoggedIn(String r)
 	{
@@ -51,6 +53,22 @@ public class RispostaLoggedIn
 
 	public void setProfilo(String profilo) {
 		this.profilo = profilo;
+	}
+
+	public int getTimerqrcode() {
+		return timerqrcode;
+	}
+
+	public void setTimerqrcode(int timerqrcode) {
+		this.timerqrcode = timerqrcode;
+	}
+
+	public int getTimerflussoacqua() {
+		return timerflussoacqua;
+	}
+
+	public void setTimerflussoacqua(int timerflussoacqua) {
+		this.timerflussoacqua = timerflussoacqua;
 	}
 	
 	

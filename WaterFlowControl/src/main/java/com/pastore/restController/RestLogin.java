@@ -60,6 +60,7 @@ public class RestLogin
 					r.setBarca(s.get().getPostazione());
 					r.setUsername(s.get().getUsername());
 					r.setProfilo(s.get().getProfilo());
+					this.loginService.inserisciTimerDiAttesa(r);
 					return r;
 				}
 				else

@@ -26,4 +26,14 @@ public class AttesaTimerService {
 	{
 		return this.attesaTimerRepository.ritornaMinutiDiAttesaFlussoAcqua();
 	}
+	
+	public void setMinutiDiAttesaQrCode(int minuti)
+	{
+		this.attesaTimerRepository.setMinutiDiAttesaQrCode(minuti);
+	}
+	
+	public void setMinutiDiAttesaFlussoAcqua(int minuti)
+	{
+		this.attesaTimerRepository.setMinutiDiAttesaFlussoAcqua(minuti);
+	}
 }
