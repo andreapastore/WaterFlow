@@ -33,7 +33,7 @@ public class FlussoAcquaTimer extends Thread
 	
 	public String getUsernameSocio()
 	{
-		return dettaglioSocioBuilder.getUser();
+		return dettaglioSocioBuilder.getUsernameSocio();
 	}
 	
 	@Override
@@ -51,8 +51,13 @@ public class FlussoAcquaTimer extends Thread
 			else
 			{
 				System.out.print("id della pompa che il timer flusso acqua sta per chiudere: " + pompa.getId());
-				System.out.println(" perchè l'utente " + dettaglioSocioBuilder.getUser() + " non ha chiuso il flusso, durata del timer: " + this.minuti);
+				System.out.println(" perchè l'utente " + dettaglioSocioBuilder.getUsernameSocio() + " non ha chiuso il flusso, durata del timer: " + this.minuti);
 				acquaService.chiudiDaTimer(pompa, dettaglioSocioBuilder);
+				//System.out.println("sono nel timer e sto checcando che la roba non sia null");
+				//System.out.println("acquaservice " + this.acquaService);
+				//System.out.println("pompa " + this.pompa);
+				//System.out.println("dettagliosociobuilder " + this.dettaglioSocioBuilder);
+				
 			}
 		} 
 		catch (Exception e) 

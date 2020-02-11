@@ -16,6 +16,7 @@ public class ScansioneQrCodeTimer extends Thread
 		this.pompa = p;
 		m *= 60000;
 		this.minuti = m;
+		this.pompa_in_uso = false;
 	}
 	
 	@Override

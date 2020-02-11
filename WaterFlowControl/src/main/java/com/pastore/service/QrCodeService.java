@@ -109,7 +109,7 @@ public class QrCodeService
 
 	public void startTimer(PompaStatus p)
 	{
-		codeTimer = new ScansioneQrCodeTimer(this, p, minuti_attesa_timer_qrcode);
+		codeTimer = new ScansioneQrCodeTimer(this, p, attesaTimerService.ritornaMinutiDiAttesaQrCode());
 		codeTimer.start();
 	}
 	

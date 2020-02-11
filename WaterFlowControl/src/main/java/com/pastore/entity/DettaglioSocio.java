@@ -13,7 +13,7 @@ public class DettaglioSocio implements Serializable
 
 	@Id
 	@Column(name = "id")
-	private String id;
+	private int id;
 	
 	@Column(name = "data_attivazione_slot")
 	private String data_attivazione_slot;
@@ -38,11 +38,11 @@ public class DettaglioSocio implements Serializable
 	
 	public DettaglioSocio () {}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +39,7 @@ public class RestDettaglioSocio {
 		{	
 			try 
 			{
-				dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getSocio_username());
+				//dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getSocio_username());
 				return new RispostaLoggedIn("true");
 			} 
 			catch (Exception e) 
@@ -82,7 +83,7 @@ public class RestDettaglioSocio {
 		}
 	}
 	
-	@GetMapping(value = "/ricercatutto", produces = "application/json")
+	@PutMapping(value = "/ricercatutto", produces = "application/json")
 	public ResponseEntity<Iterable<DettaglioSocio>> ricercaTutto(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException//ok
 	{
 		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
@@ -104,4 +105,30 @@ public class RestDettaglioSocio {
 			return new ResponseEntity<Iterable<DettaglioSocio>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-}
+
+	@PutMapping(value = "/ricercadettagliosocio/{username}", produces = "application/json")
+	public Iterable<DettaglioSocio> ricercaTuttoPerUsername(@PathVariable("username") String username, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+		Socio s = (Socio) request.getSession().getAttribute(request.getSession().getId().toString());
+	
+		if (s != null)
+		{	
+			try 
+			{
+				Iterable<DettaglioSocio> dettaglioSoci = null;
+				return dettaglioSoci = dettaglioSocioService.getDettaglioSocioByUsername(username);
+				
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				return null;
+			}
+		}
+		else
+		{
+			return null;
+		}
+		
+	}
+} 

@@ -7,12 +7,13 @@ import com.pastore.handlers.TimeHandler;
 public class DettaglioSocioBuilder 
 {
 	private DettaglioSocio dettaglioSocio;
-	private String user;
+	private int user;
 	private int minuti_tot;
 	private DateHandler dateHandler;
 	private TimeHandler timeHandler;
+	private String username_socio;
 	
-	public DettaglioSocioBuilder(String username, int minuti_totali)
+	public DettaglioSocioBuilder(int username, int minuti_totali)
 	{
 		this.user = username;
 		this.minuti_tot = minuti_totali;
@@ -34,9 +35,19 @@ public class DettaglioSocioBuilder
 		return dettaglioSocio;
 	}
 
-	public String getUser() 
+	public int getUser() 
 	{
 		return user;
+	}
+	
+	public String getUsernameSocio()
+	{
+		return this.username_socio;
+	}
+	
+	public void setUsernameSocio(String s)
+	{
+		this.username_socio = s;
 	}
 
 }

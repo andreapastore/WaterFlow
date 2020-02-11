@@ -14,9 +14,9 @@ public interface DettaglioSocioRepository extends CrudRepository<DettaglioSocio,
 {
 	@Transactional
 	@Query(value = "INSERT INTO dettagliosocio (id, apertura, chiusura, data_attivazione_slot, minuti, minuti_totali, quantita_acqua, username) values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)", nativeQuery = true)
-	public void saveDettaglioSocio(@Param ("id") String username, @Param("apertura") String apertura, @Param("chiusura") String chiusura, @Param("data_attivazione_slot") String data_attivazione_slot, @Param("minuti") int minuti, @Param("minuti_totali") int minuti_totali, @Param("quantita_acqua") int quantita_acqua, @Param("username") String socio_username);
+	public void saveDettaglioSocio(@Param ("id") int id, @Param("apertura") String apertura, @Param("chiusura") String chiusura, @Param("data_attivazione_slot") String data_attivazione_slot, @Param("minuti") int minuti, @Param("minuti_totali") int minuti_totali, @Param("quantita_acqua") int quantita_acqua, @Param("username") String username);
 	
-	@Query(value = "SELECT * FROM dettagliosocio WHERE id = ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM dettagliosocio WHERE username = ?1", nativeQuery = true)
 	public DettaglioSocio getDettaglioSocioByUsername(@Param("id") String id);
 	
 	@Query(value = "SELECT minuti_totali FROM dettagliosocio WHERE id = ?1", nativeQuery = true)
@@ -28,4 +28,10 @@ public interface DettaglioSocioRepository extends CrudRepository<DettaglioSocio,
 	
 	@Query(value = "SELECT * FROM dettagliosocio", nativeQuery = true)
 	public Iterable<DettaglioSocio> findAll();
+	
+	@Query(value = "SELECT * FROM dettagliosocio WHERE username = ?1", nativeQuery = true) 
+	public Iterable<DettaglioSocio> findAllByUsername(@Param("username") String username_socio);
+	
+	@Query(value = "SELECT MAX(id) FROM dettagliosocio", nativeQuery = true)
+	public int tornaIdMax();
 }

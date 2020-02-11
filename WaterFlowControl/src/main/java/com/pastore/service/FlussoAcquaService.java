@@ -43,7 +43,6 @@ public class FlussoAcquaService
 	{
 		disattivaTimerQrCode();
 		inizializzaDettaglioSocio(session);
-		
 	}
 	
 	public void chiudi(HttpSession currentSession)
@@ -51,22 +50,16 @@ public class FlussoAcquaService
 		disattivaTimerAcqua(currentSession);
 		Socio s = (Socio) currentSession.getAttribute(currentSession.getId().toString());
 		DettaglioSocio dettaglioSocio = memorizzatoreDettaglioSocioBuilder.getDettaglioSocioBuilder(s.getUsername()).getDettaglioSocioAggiornato();
-		DettaglioSocio d = dettaglioSocioService.getDettaglioSocioById(s.getUsername());
-		if (d != null)
-		{
-			dettaglioSocioService.updateDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
-		}
-		else
-		{
-			dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
-		}
+		dettaglioSocioService.saveDettaglioSocio(dettaglioSocioService.tornaIdMax()+1, dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), s.getUsername());
 		PompaStatus p = memorizzatorePompaSocio.getPompa(s.getUsername());
+		memorizzatoreDettaglioSocioBuilder.deleteDettaglioSocioBuilder(dettaglioSocio.getSocio_username());
 		qrCodeService.disattivaPompa(p);
 		
 	}
 
 	private void disattivaTimerQrCode()
 	{
+		System.out.println("BOOLEANA DEL TIMER QR CODE MESSA A TRUE");
 		qrCodeService.getCodeTimer().setPompa_in_uso(true);
 	}
 	
@@ -103,18 +96,13 @@ public class FlussoAcquaService
 	public void chiudiDaTimer(PompaStatus p, DettaglioSocioBuilder d) 
 	{
 		//ledService.lightOff();
-		DettaglioSocio dettaglioSocio = memorizzatoreDettaglioSocioBuilder.getDettaglioSocioBuilder(d.getUser()).getDettaglioSocioAggiornato();
-		DettaglioSocio dett = dettaglioSocioService.getDettaglioSocioById(d.getUser());
-		if (dett != null)
-		{
-			dettaglioSocioService.updateDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
-		}
-		else
-		{
-			dettaglioSocioService.saveDettaglioSocio(dettaglioSocio.getId(), dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), dettaglioSocio.getId());
-		}
+		System.out.println("SONO QUI DENTRO");
+		DettaglioSocio dettaglioSocio = memorizzatoreDettaglioSocioBuilder.getDettaglioSocioBuilder(d.getUsernameSocio()).getDettaglioSocioAggiornato();
+		System.out.println("sono dettaglio socio nella chiudi da timer " + dettaglioSocio);
+		dettaglioSocioService.saveDettaglioSocio(dettaglioSocioService.tornaIdMax()+1, dettaglioSocio.getApertura(), dettaglioSocio.getChiusura(), dettaglioSocio.getData_attivazione_slot(), dettaglioSocio.getMinuti(), dettaglioSocio.getMinuti_totali(), dettaglioSocio.getQuantita_acqua(), d.getUsernameSocio());
 		qrCodeService.disattivaPompa(p);
-		memorizzatoreDettaglioSocioBuilder.deleteDettaglioSocioBuilder(dettaglioSocio.getId());
+		memorizzatoreDettaglioSocioBuilder.deleteDettaglioSocioBuilder(dettaglioSocio.getSocio_username());
+		
 	}
 
 	public void inizializzaDettaglioSocio(HttpSession session)
@@ -123,15 +111,17 @@ public class FlussoAcquaService
 		DettaglioSocio dettaglioSocio = null;
 		dettaglioSocio = dettaglioSocioService.getDettaglioSocioById(s.getUsername());
 		DettaglioSocioBuilder dettaglioSocioBuilder;
-		if (dettaglioSocio == null)
+		if (dettaglioSocio.getSocio_username() == null)
 		{
-			dettaglioSocioBuilder = new DettaglioSocioBuilder(s.getUsername(), 0);
+			dettaglioSocioBuilder = new DettaglioSocioBuilder(dettaglioSocioService.tornaIdMax()+1, 0);
+			dettaglioSocioBuilder.setUsernameSocio(s.getUsername());
 			memorizzatoreDettaglioSocioBuilder.inserisciDettaglioSocio(s.getUsername(), dettaglioSocioBuilder);
 		}
 		else
 		{
-			dettaglioSocioBuilder = new DettaglioSocioBuilder(dettaglioSocio.getId(), dettaglioSocio.getMinuti_totali());
-			memorizzatoreDettaglioSocioBuilder.inserisciDettaglioSocio(dettaglioSocio.getId(), dettaglioSocioBuilder);
+			dettaglioSocioBuilder = new DettaglioSocioBuilder(dettaglioSocioService.tornaIdMax()+1, dettaglioSocio.getMinuti_totali());
+			dettaglioSocioBuilder.setUsernameSocio(s.getUsername());
+			memorizzatoreDettaglioSocioBuilder.inserisciDettaglioSocio(dettaglioSocio.getSocio_username(), dettaglioSocioBuilder);
 		}
 		attivaTimerFlussoAcqua(session, dettaglioSocioBuilder);
 	}
