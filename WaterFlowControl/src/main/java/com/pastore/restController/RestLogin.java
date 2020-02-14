@@ -20,7 +20,7 @@ import com.pastore.service.ListaUtentiLoggati;
 import com.pastore.service.LoginService;
 import com.pastore.service.SocioService;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://10.10.100.165:4200", allowCredentials = "true")
 @RestController
 @RequestMapping(value = "/api")
 public class RestLogin 

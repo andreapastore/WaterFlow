@@ -18,7 +18,7 @@ import com.pastore.entity.RispostaLoggedIn;
 import com.pastore.entity.Socio;
 import com.pastore.service.PompaStatusService;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://10.10.100.165:4200", allowCredentials = "true")
 @RestController
 @RequestMapping(value = "/api/pompaStatus")
 public class RestPompaStatus 

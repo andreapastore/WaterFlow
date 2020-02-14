@@ -15,7 +15,7 @@ import com.pastore.service.FlussoAcquaService;
 import com.pastore.service.LedService;
 import com.pastore.service.ListaUtentiLoggati;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://10.10.100.165:4200", allowCredentials = "true")
 @RestController
 @RequestMapping(value = "/api/flussoAcqua")
 public class RestFlussoAcqua {
